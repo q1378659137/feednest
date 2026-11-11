@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+<head>
+<title>Feed Subscriptions</title>
+</head>
+<body>
+  <outline title="switch整合包" text="switch整合包">
+      <outline text="Atmosphere" title="Atmosphere" type="rss" 
+            xmlUrl="https://github.com/Atmosphere-NX/Atmosphere/releases.atom" htmlUrl="https://github.com/Atmosphere-NX/Atmosphere/releases"/>
+      <outline text="hekate" title="hekate" type="rss" 
+            xmlUrl="https://github.com/CTCaer/hekate/releases.atom" htmlUrl="https://github.com/CTCaer/hekate/releases"/>
+      <outline text="hekate汉化" title="hekate汉化" type="rss" 
+            xmlUrl="https://github.com/easyworld/hekate/releases.atom" htmlUrl="https://github.com/easyworld/hekate/releases"/>
+      <outline text="Breeze-Beta" title="Breeze-Beta" type="rss" 
+            xmlUrl="https://github.com/tomvita/Breeze-Beta/releases.atom" htmlUrl="https://github.com/tomvita/Breeze-Beta/releases"/>
+      <outline text="dbi" title="dbi" type="rss" 
+            xmlUrl="https://github.com/rashevskyv/dbi/releases.atom" htmlUrl="https://github.com/rashevskyv/dbi/releases"/>
+      <outline text="EdiZon-SE" title="EdiZon-SE" type="rss" 
+            xmlUrl="https://github.com/tomvita/EdiZon-SE/releases.atom" htmlUrl="https://github.com/tomvita/EdiZon-SE/releases"/>
+      <outline text="Goldleaf" title="Goldleaf" type="rss" 
+            xmlUrl="https://github.com/XorTroll/Goldleaf/releases.atom" htmlUrl="https://github.com/XorTroll/Goldleaf/releases"/>
+      <outline text="nxdumptool" title="nxdumptool" type="rss" 
+            xmlUrl="https://github.com/DarkMatterCore/nxdumptool/releases.atom" htmlUrl="https://github.com/DarkMatterCore/nxdumptool/releases"/>
+      <outline text="NX-Shell" title="NX-Shell" type="rss" 
+            xmlUrl="https://github.com/joel16/NX-Shell/releases.atom" htmlUrl="https://github.com/joel16/NX-Shell/releases"/>
+      <outline text="ftpd" title="ftpd" type="rss" 
+            xmlUrl="https://github.com/mtheall/ftpd/releases.atom" htmlUrl="https://github.com/mtheall/ftpd/releases"/>
+      <outline text="Haku33" title="Haku33" type="rss" 
+            xmlUrl="https://github.com/StarDustCFW/Haku33/releases.atom" htmlUrl="https://github.com/StarDustCFW/Haku33/releases"/>
+      <outline text="JKSV" title="JKSV" type="rss" 
+            xmlUrl="https://github.com/J-D-K/JKSV/releases.atom" htmlUrl="https://github.com/J-D-K/JKSV/releases"/>
+      <outline text="Luna-App" title="Luna-App" type="rss" 
+            xmlUrl="https://github.com/Ixaruz/Luna-App/releases.atom" htmlUrl="https://github.com/Ixaruz/Luna-App/releases"/>
+      <outline text="SimpleModManager" title="SimpleModManager" type="rss" 
+            xmlUrl="https://github.com/nadrino/SimpleModManager/releases.atom" htmlUrl="https://github.com/nadrino/SimpleModManager/releases"/>
+      <outline text="Simple_Mod_Alchemist" title="Simple_Mod_Alchemist" type="rss" 
+            xmlUrl="https://github.com/gtiersma/Simple_Mod_Alchemist/releases.atom" htmlUrl="https://github.com/gtiersma/Simple_Mod_Alchemist/releases"/>
+      <outline text="sys-clk" title="sys-clk" type="rss" 
+            xmlUrl="https://github.com/retronx-team/sys-clk/releases.atom" htmlUrl="https://github.com/retronx-team/sys-clk/releases"/>
+      <outline text="SysDVR" title="SysDVR" type="rss" 
+            xmlUrl="https://github.com/exelix11/SysDVR/releases.atom" htmlUrl="https://github.com/exelix11/SysDVR/releases"/>
+      <outline text="ldn_mitm" title="ldn_mitm" type="rss" 
+            xmlUrl="https://github.com/spacemeowx2/ldn_mitm/releases.atom" htmlUrl="https://github.com/spacemeowx2/ldn_mitm/releases"/>
+      <outline text="ldn_mitm_接替" title="ldn_mitm_接替" type="rss" 
+            xmlUrl="https://github.com/Lusamine/ldn_mitm/releases.atom" htmlUrl="https://github.com/Lusamine/ldn_mitm/releases"/>
+      <outline text="sphaira" title="sphaira" type="rss" 
+            xmlUrl="https://github.com/ITotalJustice/sphaira/releases.atom" htmlUrl="https://github.com/ITotalJustice/sphaira/releases"/>
+      <outline text="Fizeau_屏幕滤镜" title="Fizeau_屏幕滤镜" type="rss" 
+            xmlUrl="https://github.com/averne/Fizeau/releases.atom" htmlUrl="https://github.com/averne/Fizeau/releases"/>
+      <outline text="NX-Activity-Log_游戏时长查看" title="NX-Activity-Log_游戏时长查看" type="rss" 
+            xmlUrl="https://github.com/tallbl0nde/NX-Activity-Log/releases.atom" htmlUrl="https://github.com/tallbl0nde/NX-Activity-Log/releases"/>
+      <outline text="Switch-Firmware-Dumper_原" title="Switch-Firmware-Dumper" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/Switch-Firmware-Dumper/releases.atom" htmlUrl="https://github.com/zdm65477730/Switch-Firmware-Dumper/releases"/>
+      <outline text="Switch-Firmware-Dumper_汉化" title="Switch-Firmware-Dumper" type="rss" 
+            xmlUrl="https://github.com/mrdude2478/Switch-Firmware-Dumper/releases.atom" htmlUrl="https://github.com/mrdude2478/Switch-Firmware-Dumper/releases"/>
+      <outline text="battery_desync_fix_nx" title="battery_desync_fix_nx" type="rss" 
+            xmlUrl="https://github.com/CTCaer/battery_desync_fix_nx/releases.atom" htmlUrl="https://github.com/CTCaer/battery_desync_fix_nx/releases"/>
+      <outline text="sys-botbase" title="sys-botbase" type="rss" 
+            xmlUrl="https://github.com/olliz0r/sys-botbase/releases.atom" htmlUrl="https://github.com/olliz0r/sys-botbase/releases"/>
+      <outline text="usb-botbase" title="usb-botbase" type="rss" 
+            xmlUrl="https://github.com/Koi-3088/usb-botbase/releases.atom" htmlUrl="https://github.com/Koi-3088/usb-botbase/releases"/>
+      <outline text="sys-ftpd" title="sys-ftpd" type="rss" 
+            xmlUrl="https://github.com/cathery/sys-ftpd/releases.atom" htmlUrl="https://github.com/cathery/sys-ftpd/releases"/>
+      <outline text="MissionControl" title="MissionControl" type="rss" 
+            xmlUrl="https://github.com/ndeadly/MissionControl/releases.atom" htmlUrl="https://github.com/ndeadly/MissionControl/releases"/>
+      <outline text="sys-con" title="sys-con" type="rss" 
+            xmlUrl="https://github.com/cathery/sys-con/releases.atom" htmlUrl="https://github.com/cathery/sys-con/releases"/>
+      <outline text="SwitchThemeInjector_主题" title="SwitchThemeInjector" type="rss" 
+            xmlUrl="https://github.com/exelix11/SwitchThemeInjector/releases.atom" htmlUrl="https://github.com/exelix11/SwitchThemeInjector/releases"/>
+      <outline text="Avatool_自定义头像" title="Avatool" type="rss" 
+            xmlUrl="https://github.com/J-D-K/Avatool/releases.atom" htmlUrl="https://github.com/J-D-K/Avatool/releases"/>
+      <outline text="switch-sys-tweak_自定义图标" title="switch-sys-tweak_自定义图标" type="rss" 
+            xmlUrl="https://github.com/eradicatinglove/switch-sys-tweak/releases.atom" htmlUrl="https://github.com/eradicatinglove/switch-sys-tweak/releases"/>
+      <outline text="hwfly-nx firmware" title="hwfly-nx firmware" type="rss" 
+            xmlUrl="https://github.com/hwfly-nx/firmware/releases.atom" htmlUrl="https://github.com/hwfly-nx/firmware/releases"/>
+      <outline text="TegraExplorer" title="TegraExplorer" type="rss" 
+            xmlUrl="https://github.com/suchmememanyskill/TegraExplorer/releases.atom" htmlUrl="https://github.com/suchmememanyskill/TegraExplorer/releases"/>
+      <outline text="Lockpick_RCM" title="group_3_提取密钥_Lockpick_RCM" type="rss" 
+            xmlUrl="https://github.com/Decscots/Lockpick_RCM/releases.atom"/>
+      <outline text="nx-ovlloader_特斯拉" title="nx-ovlloader_特斯拉" type="rss" 
+            xmlUrl="https://github.com/WerWolv/nx-ovlloader/releases.atom" htmlUrl="https://github.com/WerWolv/nx-ovlloader/releases"/>
+      <outline text="nx-ovlloader_接替" title="nx-ovlloader" type="rss" 
+            xmlUrl="https://github.com/ppkantorski/nx-ovlloader/releases.atom" htmlUrl="https://github.com/ppkantorski/nx-ovlloader/releases"/>
+      <outline text="ovl-sysmodules_特斯拉" title="ovl-sysmodules_特斯拉" type="rss" 
+            xmlUrl="https://github.com/WerWolv/ovl-sysmodules/releases.atom" htmlUrl="https://github.com/WerWolv/ovl-sysmodules/releases"/>
+      <outline text="ovl-sysmodules_接替" title="ovl-sysmodules" type="rss" 
+            xmlUrl="https://github.com/ppkantorski/ovl-sysmodules/releases.atom" htmlUrl="https://github.com/ppkantorski/ovl-sysmodules/releases"/>
+      <outline text="Tesla-Menu_特斯拉" title="Tesla-Menu_特斯拉" type="rss" 
+            xmlUrl="https://github.com/WerWolv/Tesla-Menu/releases.atom" htmlUrl="https://github.com/WerWolv/Tesla-Menu/releases"/>
+      <outline text="Ultrahand-Overlay" title="Ultrahand-Overlay" type="rss" 
+            xmlUrl="https://github.com/ppkantorski/Ultrahand-Overlay/releases.atom" htmlUrl="https://github.com/ppkantorski/Ultrahand-Overlay/releases"/>
+      <outline text="emuiibo" title="emuiibo" type="rss" 
+            xmlUrl="https://github.com/XorTroll/emuiibo/releases.atom" htmlUrl="https://github.com/XorTroll/emuiibo/releases"/>
+      <outline text="Zing" title="Zing" type="rss" 
+            xmlUrl="https://github.com/tomvita/Zing/releases.atom" htmlUrl="https://github.com/tomvita/Zing/releases"/>
+      <outline text="EdiZon-Overlay" title="EdiZon-Overlay" type="rss" 
+            xmlUrl="https://github.com/proferabg/EdiZon-Overlay/releases.atom" htmlUrl="https://github.com/proferabg/EdiZon-Overlay/releases"/>
+      <outline text="ReverseNX-RT" title="ReverseNX-RT" type="rss" 
+            xmlUrl="https://github.com/masagrator/ReverseNX-RT/releases.atom" htmlUrl="https://github.com/masagrator/ReverseNX-RT/releases"/>
+      <outline text="NX-FPS" title="NX-FPS" type="rss" 
+            xmlUrl="https://github.com/masagrator/NX-FPS/releases.atom" htmlUrl="https://github.com/masagrator/NX-FPS/releases"/>
+      <outline text="SaltyNX" title="SaltyNX" type="rss" 
+            xmlUrl="https://github.com/masagrator/SaltyNX/releases.atom" htmlUrl="https://github.com/masagrator/SaltyNX/releases"/>
+      <outline text="FPSLocker" title="FPSLocker" type="rss" 
+            xmlUrl="https://github.com/masagrator/FPSLocker/releases.atom" htmlUrl="https://github.com/masagrator/FPSLocker/releases"/>
+      <outline text="Status-Monitor-Overlay" title="Status-Monitor-Overlay" type="rss" 
+            xmlUrl="https://github.com/masagrator/Status-Monitor-Overlay/releases.atom" htmlUrl="https://github.com/masagrator/Status-Monitor-Overlay/releases"/>
+      <outline text="QuickNTP" title="QuickNTP" type="rss" 
+            xmlUrl="https://github.com/nedex/QuickNTP/releases.atom" htmlUrl="https://github.com/nedex/QuickNTP/releases"/>
+      <outline text="KeyX" title="KeyX" type="rss" 
+            xmlUrl="https://github.com/TOM-BadEN/KeyX/releases.atom" htmlUrl="https://github.com/TOM-BadEN/KeyX/releases"/>
+      <outline text="AtmoXL-Titel-Installer" title="AtmoXL-Titel-Installer" type="rss" 
+            xmlUrl="https://github.com/dezem/AtmoXL-Titel-Installer/releases.atom" htmlUrl="https://github.com/dezem/AtmoXL-Titel-Installer/releases"/>
+      <outline text="Awoo-Installer" title="Awoo-Installer" type="rss" 
+            xmlUrl="https://github.com/Huntereb/Awoo-Installer/releases.atom" htmlUrl="https://github.com/Huntereb/Awoo-Installer/releases"/>
+      <outline text="linkalho" title="linkalho" type="rss" 
+            xmlUrl="https://github.com/rdmrocha/linkalho/releases.atom"/>
+      <outline text="linkalho_接替" title="linkalho_接替" type="rss" 
+            xmlUrl="https://github.com/impeeza/linkalho/releases.atom" htmlUrl="https://github.com/impeeza/linkalho/releases"/>
+      <outline text="linkalho_汉化" title="linkalho_汉化" type="rss" 
+            xmlUrl="https://github.com/SwitchScriptTW/linkalho/releases.atom" htmlUrl="https://github.com/SwitchScriptTW/linkalho/releases"/>
+      <outline text="Switch_90DNS_tester" title="Switch_90DNS_tester" type="rss" 
+            xmlUrl="https://github.com/meganukebmp/Switch_90DNS_tester/releases.atom" htmlUrl="https://github.com/meganukebmp/Switch_90DNS_tester/releases"/>
+      <outline text="wiliwili" title="wiliwili" type="rss" 
+            xmlUrl="https://github.com/xfangfang/wiliwili/releases.atom" htmlUrl="https://github.com/xfangfang/wiliwili/releases"/>
+      <outline text="Moonlight-Switch" title="Moonlight-Switch" type="rss" 
+            xmlUrl="https://github.com/XITRIX/Moonlight-Switch/releases.atom" htmlUrl="https://github.com/XITRIX/Moonlight-Switch/releases"/>
+      <outline text="aio-switch-updater" title="aio-switch-updater" type="rss" 
+            xmlUrl="https://github.com/HamletDuFromage/aio-switch-updater/releases.atom" htmlUrl="https://github.com/HamletDuFromage/aio-switch-updater/releases"/>
+      <outline text="sys-patch" title="sys-patch" type="rss" 
+            xmlUrl="https://github.com/ITotalJustice/sys-patch/releases.atom"/>
+      <outline text="nx-ovlloader_汉化" title="nx-ovlloader_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/nx-ovlloader/releases.atom" htmlUrl="https://github.com/zdm65477730/nx-ovlloader/releases"/>
+      <outline text="Tesla-Menu_汉化" title="Tesla-Menu_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/Tesla-Menu/releases.atom" htmlUrl="https://github.com/zdm65477730/Tesla-Menu/releases"/>
+      <outline text="ovl-sysmodules_汉化" title="ovl-sysmodules_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/ovl-sysmodules/releases.atom" htmlUrl="https://github.com/zdm65477730/ovl-sysmodules/releases"/>
+      <outline text="Fizeau_汉化" title="Fizeau_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/Fizeau/releases.atom" htmlUrl="https://github.com/zdm65477730/Fizeau/releases"/>
+      <outline text="QuickNTP_汉化" title="QuickNTP_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/QuickNTP/releases.atom" htmlUrl="https://github.com/zdm65477730/QuickNTP/releases"/>
+      <outline text="sysdvr-overlay_汉化" title="sysdvr-overlay_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/sysdvr-overlay/releases.atom" htmlUrl="https://github.com/zdm65477730/sysdvr-overlay/releases"/>
+      <outline text="Status-Monitor-Overlay_汉化" title="Status-Monitor-Overlay_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/Status-Monitor-Overlay/releases.atom" htmlUrl="https://github.com/zdm65477730/Status-Monitor-Overlay/releases"/>
+      <outline text="ReverseNX-RT_汉化" title="ReverseNX-RT_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/ReverseNX-RT/releases.atom" htmlUrl="https://github.com/zdm65477730/ReverseNX-RT/releases"/>
+      <outline text="emuiibo_汉化" title="emuiibo_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/emuiibo/releases.atom" htmlUrl="https://github.com/zdm65477730/emuiibo/releases"/>
+      <outline text="sys-clk_汉化" title="sys-clk_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/sys-clk/releases.atom" htmlUrl="https://github.com/zdm65477730/sys-clk/releases"/>
+      <outline text="Lockpick_RCM_汉化" title="Lockpick_RCM_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/Lockpick_RCMDecScots/releases.atom" htmlUrl="https://github.com/zdm65477730/Lockpick_RCMDecScots/releases"/>
+      <outline text="TegraExplorer_汉化" title="TegraExplorer_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/TegraExplorer/releases.atom" htmlUrl="https://github.com/zdm65477730/TegraExplorer/releases"/>
+      <outline text="NX-Activity-Log_汉化" title="NX-Activity-Log_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/NX-Activity-Log/releases.atom" htmlUrl="https://github.com/zdm65477730/NX-Activity-Log/releases"/>
+      <outline text="NX-Shell_汉化" title="NX-Shell_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/NX-Shell/releases.atom" htmlUrl="https://github.com/zdm65477730/NX-Shell/releases"/>
+      <outline text="JKSV_替代" title="JKSV_替代" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/JKSV/releases.atom" htmlUrl="https://github.com/zdm65477730/JKSV/releases"/>
+      <outline text="Ultra-Tuner" title="Ultra-Tuner" type="rss" 
+            xmlUrl="https://github.com/Ultra-NX/Ultra-Tuner/releases.atom" htmlUrl="https://github.com/Ultra-NX/Ultra-Tuner/releases"/>
+      <outline text="sys-patch" title="sys-patch" type="rss" 
+            xmlUrl="https://github.com/impeeza/sys-patch/releases.atom" htmlUrl="https://github.com/impeeza/sys-patch/releases"/>
+      <outline text="Ultrahand-Overlay_汉化" title="Ultrahand-Overlay_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/Ultrahand-Overlay/releases.atom" htmlUrl="https://github.com/zdm65477730/Ultrahand-Overlay/releases"/>
+      <outline text="ldn_mitm_汉化" title="ldn_mitm_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/ldn_mitm/releases.atom" htmlUrl="https://github.com/zdm65477730/ldn_mitm/releases"/>
+      <outline text="EdiZon-Overlay_汉化" title="EdiZon-Overlay_汉化" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/EdiZon-Overlay/releases.atom" htmlUrl="https://github.com/zdm65477730/EdiZon-Overlay/releases"/>
+      <outline text="Nintendo-FW-UPDATE" title="Nintendo-FW-UPDATE" type="rss" 
+            xmlUrl="https://github.com/sskyNS/Nintendo-FW-UPDATE/releases.atom" htmlUrl="https://github.com/sskyNS/Nintendo-FW-UPDATE/releases"/>
+  </outline>
+  <outline title="switch骚操作" text="switch骚操作">
+      <outline text="EX-BootLogo-Nintendo-Switch-Bootlogo-Converter" title="EX-BootLogo-Nintendo-Switch-Bootlogo-Converter" type="rss" 
+            xmlUrl="https://github.com/KranKRival/EX-BootLogo-Nintendo-Switch-Bootlogo-Converter/releases.atom" htmlUrl="https://github.com/KranKRival/EX-BootLogo-Nintendo-Switch-Bootlogo-Converter/releases"/>
+      <outline text="NSC_BUILDER" title="NSC_BUILDER" type="rss" 
+            xmlUrl="https://github.com/zdm65477730/NSC_BUILDER/releases.atom" htmlUrl="https://github.com/zdm65477730/NSC_BUILDER/releases"/>
+  </outline>
+  <outline title="amiibo" text="amiibo">
+      <outline text="TagMo" title="TagMo" type="rss" 
+            xmlUrl="https://github.com/HiddenRamblings/TagMo/releases.atom" htmlUrl="https://github.com/HiddenRamblings/TagMo/releases"/>
+  </outline>
+  <outline title="动物森友会" text="动物森友会">
+      <outline text="ACNH-Pixel-Press_留言板打印机" title="ACNH-Pixel-Press_留言板打印机" type="rss" 
+            xmlUrl="https://github.com/Katsching/ACNH-Pixel-Press/releases.atom" htmlUrl="https://github.com/Katsching/ACNH-Pixel-Press/releases"/>
+      <outline text="ACNHPokerCore" title="ACNHPokerCore" type="rss" 
+            xmlUrl="https://github.com/MyShiLingStar/ACNHPokerCore/releases.atom" htmlUrl="https://github.com/MyShiLingStar/ACNHPokerCore/releases"/>
+      <outline text="ACNHMobileSpawner" title="ACNHMobileSpawner" type="rss" 
+            xmlUrl="https://github.com/berichan/ACNHMobileSpawner/releases.atom" htmlUrl="https://github.com/berichan/ACNHMobileSpawner/releases"/>
+  </outline>
+  <outline title="宝可梦" text="宝可梦">
+      <outline text="PKHeX" title="PKHeX" type="rss" 
+            xmlUrl="https://github.com/kwsch/PKHeX/releases.atom" htmlUrl="https://github.com/kwsch/PKHeX/releases"/>
+      <outline text="PKHeX-Plugins" title="PKHeX-Plugins" type="rss" 
+            xmlUrl="https://github.com/architdate/PKHeX-Plugins/releases.atom" htmlUrl="https://github.com/architdate/PKHeX-Plugins/releases"/>
+      <outline text="PKHeXPluginPile" title="PKHeXPluginPile" type="rss" 
+            xmlUrl="https://github.com/foohyfooh/PKHeXPluginPile/releases.atom" htmlUrl="https://github.com/foohyfooh/PKHeXPluginPile/releases"/>
+  </outline>
+  <outline title="塞尔达传说" text="塞尔达传说">
+      <outline text="TOTK-SaveGame-Editor" title="TOTK-SaveGame-Editor" type="rss" 
+            xmlUrl="https://github.com/lchmagKekse/TOTK-SaveGame-Editor/releases.atom" htmlUrl="https://github.com/lchmagKekse/TOTK-SaveGame-Editor/releases"/>
+  </outline>
+</body>
+</opml>

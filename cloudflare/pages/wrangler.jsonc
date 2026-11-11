@@ -1,0 +1,13 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "feednest",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-01-01",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "feednest-db",
+      "database_id": "REPLACE_WITH_YOUR_D1_ID"
+    }
+  ]
+}

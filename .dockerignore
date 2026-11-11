@@ -1,0 +1,11 @@
+node_modules
+data
+.shots
+.chrome-profile
+*.log
+.git
+.gitignore
+README.md
+Dockerfile
+docker-compose.yml
+seed

@@ -1,0 +1,8 @@
+node_modules/
+data/
+.shots/
+.wrangler/
+cloudflare/pages/dist/
+*.log
+*.db
+1panel/dist/

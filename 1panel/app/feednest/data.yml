@@ -1,0 +1,40 @@
+name: FeedNest
+tags:
+  - RSS
+  - 阅读器
+title: FeedNest RSS 阅读器
+description: 多用户自托管 RSS/Atom 阅读器，支持 OPML 导入导出、定时刷新、收藏与搜索
+additionalProperties:
+  key: feednest
+  name: FeedNest
+  tags:
+    - RSS
+  shortDescZh: 多用户自托管 RSS 阅读器
+  shortDescEn: Self-hosted multi-user RSS/Atom reader
+  description:
+    zh: 参考 Feedbro 的三栏阅读体验，支持多账号数据隔离、OPML 导入导出、定时刷新、收藏与搜索。默认账号 admin/admin，登录后请立即修改密码。
+    en: A Feedbro-like three-pane RSS reader with multi-user isolation, OPML import/export, scheduled refresh, starring and search. Default account admin/admin.
+  type: tool
+  crossVersionUpdate: true
+  limit: 0
+  website: ""
+  github: ""
+  document: ""
+  version: 1.2.0
+  memoryRequired: 256
+  architectures:
+    - amd64
+  formFields:
+    - default: 13786
+      envKey: PANEL_APP_PORT_HTTP
+      labelEn: Web Port
+      labelZh: 访问端口
+      required: true
+      type: number
+      rule: paramPort
+    - default: Asia/Shanghai
+      envKey: TZ
+      labelEn: Timezone
+      labelZh: 时区
+      required: false
+      type: text

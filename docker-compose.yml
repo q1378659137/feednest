@@ -1,0 +1,24 @@
+services:
+  feednest:
+    build:
+      context: .
+      args:
+        # 国内构建建议用镜像源，海外可改成 https://registry.npmjs.org
+        NPM_REGISTRY: https://registry.npmmirror.com
+    image: feednest:1.2.0
+    container_name: feednest
+    ports:
+      - "13786:13786"
+    volumes:
+      # 订阅数据（SQLite）持久化在本机 feednest/data 目录
+      - ./data:/data
+    environment:
+      - TZ=Asia/Shanghai
+      - PORT=13786
+      # 抓取 GitHub 等需要代理的订阅源时，取消下面两行注释
+      # （host.docker.internal 指向宿主机，Windows/macOS 的 Docker Desktop 可用）
+      # - HTTPS_PROXY=http://host.docker.internal:10808
+      # - HTTP_PROXY=http://host.docker.internal:10808
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

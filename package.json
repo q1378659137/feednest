@@ -1,0 +1,21 @@
+{
+  "name": "feednest",
+  "version": "1.2.0",
+  "private": true,
+  "description": "FeedNest - 自托管 RSS 订阅服务器（Feedbro 风格三栏阅读器）",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node --experimental-sqlite server/index.js",
+    "dev": "node --experimental-sqlite --watch server/index.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.5.0",
+    "undici": "^6.21.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.160.0"
+  }
+}
