@@ -127,6 +127,7 @@ const DEFAULT_SETTINGS = {
   maxItemsPerFeed: 300,
   pushEnabled: false,
   pushToken: '',
+  language: 'zh-CN',
 };
 
 function hashPassword(password) {
@@ -378,6 +379,57 @@ function setSetting(userId, key, value) {
 
 function listFolders(userId) {
   return all('SELECT * FROM folders WHERE user_id = ? ORDER BY position ASC, created_at ASC', userId);
+}
+
+/* ------------------------- 拖拽排序 ------------------------- */
+
+/**
+ * 把订阅移动到目标文件夹，并放到 beforeId 之前（null = 末尾）。
+ * 同级重新编号（100,200,300…），保证顺序稳定。
+ */
+function reorderFeed(userId, feedId, folderId, beforeId) {
+  const feeds = listFeeds(userId);
+  const target = feeds.find((f) => f.id === feedId);
+  if (!target) throw new Error('订阅不存在');
+
+  let dest = folderId || null;
+  if (dest && !listFolders(userId).some((f) => f.id === dest)) dest = null;
+
+  const siblings = feeds.filter((f) => f.id !== feedId && (f.folder_id || null) === dest);
+  const idx = beforeId ? siblings.findIndex((f) => f.id === beforeId) : -1;
+  siblings.splice(idx < 0 ? siblings.length : idx, 0, target);
+
+  db.exec('BEGIN');
+  try {
+    siblings.forEach((f, i) => {
+      run('UPDATE feeds SET sort_order = ?, folder_id = ? WHERE id = ?', (i + 1) * 100, dest, f.id);
+    });
+    db.exec('COMMIT');
+  } catch (err) {
+    db.exec('ROLLBACK');
+    throw err;
+  }
+  return { id: feedId, folderId: dest, position: siblings.findIndex((f) => f.id === feedId) };
+}
+
+/** 调整文件夹顺序（beforeId = null 表示放到末尾） */
+function reorderFolder(userId, folderId, beforeId) {
+  const folders = listFolders(userId);
+  const target = folders.find((f) => f.id === folderId);
+  if (!target) throw new Error('文件夹不存在');
+  const rest = folders.filter((f) => f.id !== folderId);
+  const idx = beforeId ? rest.findIndex((f) => f.id === beforeId) : -1;
+  rest.splice(idx < 0 ? rest.length : idx, 0, target);
+
+  db.exec('BEGIN');
+  try {
+    rest.forEach((f, i) => run('UPDATE folders SET position = ? WHERE id = ?', (i + 1) * 100, f.id));
+    db.exec('COMMIT');
+  } catch (err) {
+    db.exec('ROLLBACK');
+    throw err;
+  }
+  return { id: folderId, position: rest.findIndex((f) => f.id === folderId) };
 }
 
 function createFolder(userId, name) {
@@ -732,6 +784,8 @@ module.exports = {
   setUserPassword,
   updateUser,
   deleteUser,
+  reorderFeed,
+  reorderFolder,
   clearUserSubscriptions,
   resetInstance,
   createSession,

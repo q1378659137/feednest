@@ -594,7 +594,29 @@ route('POST', /^\/api\/settings$/, async ({ request, db, user }) => {
   if (body.pushToken !== undefined) {
     await db.setSetting(user.id, 'pushToken', String(body.pushToken || '').trim().slice(0, 200));
   }
+  if (body.language !== undefined) {
+    await db.setSetting(user.id, 'language', ['zh-CN', 'zh-TW', 'en'].includes(body.language) ? body.language : 'zh-CN');
+  }
   return json({ settings: await db.getSettings(user.id) });
+});
+
+route('POST', /^\/api\/reorder$/, async ({ request, db, user }) => {
+  const body = await request.json().catch(() => ({}));
+  const type = String(body.type || '');
+  const id = String(body.id || '');
+  if (!id) return json({ error: '缺少 id' }, 400);
+  try {
+    if (type === 'folder') {
+      return json({ ok: true, ...(await db.reorderFolder(user.id, id, body.beforeId || null)) });
+    }
+    if (type !== 'feed') return json({ error: 'type 只能是 feed 或 folder' }, 400);
+    return json({
+      ok: true,
+      ...(await db.reorderFeed(user.id, id, body.folderId || null, body.beforeId || null)),
+    });
+  } catch (err) {
+    return json({ error: String((err && err.message) || err) }, 400);
+  }
 });
 
 route('POST', /^\/api\/push\/test$/, async ({ request, db, user, env }) => {

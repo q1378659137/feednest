@@ -23,10 +23,12 @@ async function api(path, options = {}) {
     data = { error: text.slice(0, 200) };
   }
   if (!res.ok) {
+    // 后端错误文案是中文，这里过一遍词典（查不到就原样返回）
+    const raw = data.error ? t(data.error) : '';
     if (res.status === 401 && !String(path).startsWith('/api/auth/login')) {
-      showLogin(data.error && data.error !== '未登录' ? data.error : '');
+      showLogin(raw && data.error !== '未登录' ? raw : '');
     }
-    throw new Error(data.error || `请求失败 (${res.status})`);
+    throw new Error(raw || t('请求失败 ({code})', { code: res.status }));
   }
   return data;
 }
@@ -34,14 +36,14 @@ async function api(path, options = {}) {
 function timeAgo(ts) {
   if (!ts) return '';
   const diff = Date.now() - ts;
-  if (diff < 60_000) return '刚刚';
-  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)} 分钟前`;
-  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)} 小时前`;
-  if (diff < 172_800_000) return '昨天';
-  if (diff < 7 * 86_400_000) return `${Math.floor(diff / 86_400_000)} 天前`;
+  if (diff < 60_000) return t('刚刚');
+  if (diff < 3_600_000) return t('{n} 分钟前', { n: Math.floor(diff / 60_000) });
+  if (diff < 86_400_000) return t('{n} 小时前', { n: Math.floor(diff / 3_600_000) });
+  if (diff < 172_800_000) return t('昨天');
+  if (diff < 7 * 86_400_000) return t('{n} 天前', { n: Math.floor(diff / 86_400_000) });
   const d = new Date(ts);
   const sameYear = d.getFullYear() === new Date().getFullYear();
-  return `${d.getMonth() + 1}月${d.getDate()}日${sameYear ? '' : ` ${d.getFullYear()}`}`;
+  return t('{m}月{d}日', { m: d.getMonth() + 1, d: d.getDate() }) + (sameYear ? '' : ` ${d.getFullYear()}`);
 }
 
 function fullTime(ts) {
@@ -114,7 +116,7 @@ function applyTheme() {
 function cycleTheme() {
   state.theme = THEMES[(THEMES.indexOf(state.theme) + 1) % THEMES.length];
   applyTheme();
-  toast(`主题：${{ light: '浅色', dark: '深色', sepia: '护眼' }[state.theme]}`);
+  toast(`主题：${{ light: t('浅色'), dark: t('深色'), sepia: t('护眼') }[state.theme]}`);
 }
 
 /* ======================= 提示 ======================= */
@@ -162,7 +164,7 @@ function renderSidebar() {
   }
 
   const feedRow = (feed) =>
-    `<div class="tree-row tree-feed ${feed.unread ? 'unread' : 'read'} ${
+    `<div draggable="true" class="tree-row tree-feed ${feed.unread ? 'unread' : 'read'} ${
       state.scope.type === 'feed' && state.scope.id === feed.id ? 'active' : ''
     }" data-type="feed" data-id="${feed.id}">
       ${avatarHtml(feed.title, feed.iconUrl, 18)}
@@ -178,7 +180,7 @@ function renderSidebar() {
     const unread = state.folderUnread[folder.id] || 0;
     html += `
       <div class="tree-folder ${collapsed ? 'collapsed' : ''} ${unread > 0 ? 'has-unread' : ''}" data-folder="${folder.id}">
-        <div class="tree-row ${state.scope.type === 'folder' && state.scope.id === folder.id ? 'active' : ''}" data-type="folder" data-id="${folder.id}">
+        <div draggable="true" class="tree-row ${state.scope.type === 'folder' && state.scope.id === folder.id ? 'active' : ''}" data-type="folder" data-id="${folder.id}">
           <svg viewBox="0 0 24 24" class="ic chev"><path d="m6 9 6 6 6-6"/></svg>
           <svg viewBox="0 0 24 24" class="ic ic-folder" style="width:15px;height:15px"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>
           <span class="row-title" title="${esc(folder.name)}">${esc(folder.name)}</span>
@@ -188,14 +190,15 @@ function renderSidebar() {
       </div>`;
   }
   if (loose.length) html += loose.map(feedRow).join('');
+  html += `<div class="tree-dropzone" data-drop-root>${t('拖到这里移到根目录')}</div>`;
 
   $('#tree').innerHTML = html;
   tree.scrollTop = scrollTop;
 
   const errCount = state.feeds.filter((f) => f.lastStatus === 'error').length;
-  $('#stat-line').innerHTML = `${state.feeds.length} 个订阅 · ${state.counts.unread} 篇未读${
-    errCount ? ` · <span style="color:var(--danger)">${errCount} 个异常</span>` : ''
-  }`;
+  $('#stat-line').innerHTML =
+    t('{f} 个订阅 · {u} 篇未读', { f: state.feeds.length, u: state.counts.unread }) +
+    (errCount ? `<span style="color:var(--danger)">${t(' · {n} 个异常', { n: errCount })}</span>` : '');
 }
 
 function setScope(scope) {
@@ -219,19 +222,19 @@ function scopeParam() {
 }
 
 function scopeTitle() {
-  let base = '文章';
-  if (state.scope.type === 'all') base = state.unreadOnly ? '全部未读' : '全部文章';
-  else if (state.scope.type === 'unread') base = '未读文章';
-  else if (state.scope.type === 'starred') base = '收藏夹';
+  let base = t('文章');
+  if (state.scope.type === 'all') base = state.unreadOnly ? t('全部未读') : t('全部文章');
+  else if (state.scope.type === 'unread') base = t('未读文章');
+  else if (state.scope.type === 'starred') base = t('收藏夹');
   else if (state.scope.type === 'feed') {
     const f = state.feeds.find((x) => x.id === state.scope.id);
-    base = f ? f.title : '订阅';
+    base = f ? f.title : t('订阅');
   } else if (state.scope.type === 'folder') {
     const f = state.folders.find((x) => x.id === state.scope.id);
-    base = f ? f.name : '文件夹';
+    base = f ? f.name : t('文件夹');
   }
   if (state.unreadOnly && (state.scope.type === 'feed' || state.scope.type === 'folder' || state.scope.type === 'starred')) {
-    base += ' · 未读';
+    base += t(' · 未读');
   }
   return base;
 }
@@ -267,7 +270,8 @@ async function loadItems({ append = false } = {}) {
     state.items = append ? state.items.concat(data.items) : data.items;
     renderItems();
     $('#listTitle').textContent = scopeTitle();
-    $('#listCount').textContent = state.total ? `${state.total} 篇` : '';
+  $('#listCount').textContent = state.total ? t('{n} 篇', { n: state.total }) : '';
+    $('#listCount').textContent = state.total ? t('{n} 篇', { n: state.total }) : '';
     $('#btn-unread').classList.toggle('active', state.scope.type === 'unread' || state.unreadOnly);
   } catch (err) {
     toast(err.message, 'error');
@@ -310,19 +314,19 @@ function renderItems() {
     if (!state.feeds.length) {
       box.innerHTML = `<div class="empty">
         <div class="art"><svg viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.4" fill="currentColor" stroke="none"/></svg></div>
-        <h3>还没有订阅任何内容</h3>
-        <p>导入你的 OPML 订阅文件，或者手动添加一个 RSS / Atom 订阅源。</p>
+        <h3>${t('还没有订阅任何内容')}</h3>
+        <p>${t('导入你的 OPML 订阅文件，或者手动添加一个 RSS / Atom 订阅源。')}</p>
         <div class="empty-actions">
-          <button class="btn primary" data-action="import">导入 OPML</button>
-          <button class="btn ghost" data-action="add-feed">添加订阅</button>
+          <button class="btn primary" data-action="import">${t('导入 OPML')}</button>
+          <button class="btn ghost" data-action="add-feed">${t('添加订阅')}</button>
         </div>
       </div>`;
       return;
     }
     box.innerHTML = `<div class="empty">
       <div class="art"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
-      <h3>${state.q ? '没有匹配的文章' : '这里是空的'}</h3>
-      <p>${state.q ? '试试其他关键词，或清空搜索条件。' : '这个订阅源暂时没有文章，点右上角刷新试试。'}</p>
+      <h3>${state.q ? t('没有匹配的文章') : t('这里是空的')}</h3>
+      <p>${state.q ? t('试试其他关键词，或清空搜索条件。') : t('这个订阅源暂时没有文章，点右上角刷新试试。')}</p>
     </div>`;
     return;
   }
@@ -335,8 +339,8 @@ function renderItems() {
 function readerEmptyHtml() {
   return `<div class="reader-empty">
     <div class="art"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v16H6.5A2.5 2.5 0 0 0 4 21.5V5.5Z"/><path d="M19 19v2H6.5A2.5 2.5 0 0 1 4 18.5"/><path d="M8 7h7M8 11h7"/></svg></div>
-    <h3>选择一篇文章开始阅读</h3>
-    <p>用 <kbd>J</kbd> / <kbd>K</kbd> 切换文章，<kbd>M</kbd> 标记已读，<kbd>S</kbd> 收藏，<kbd>R</kbd> 刷新订阅。</p>
+    <h3>${t('选择一篇文章开始阅读')}</h3>
+    <p>${t('用 {k1} / {k2} 切换文章，{k3} 标记已读，{k4} 收藏，{k5} 刷新订阅。', { k1: 'J', k2: 'K', k3: 'M', k4: 'S', k5: 'R' })}</p>
   </div>`;
 }
 
@@ -478,7 +482,7 @@ function renderReader(item, { keepScroll = false } = {}) {
 
   const content = item.content && item.content.trim()
     ? sanitizeHtml(item.content)
-    : `<p>${esc(item.summary || '该文章没有正文内容。')}</p><p class="plain-note">请点击右上角「原文」查看完整内容。</p>`;
+    : `<p>${esc(item.summary || '该文章没有正文内容。')}</p><p class="plain-note">${t('请点击右上角「原文」查看完整内容。')}</p>`;
 
   reader.innerHTML = `
     <div class="reader-head">
@@ -489,19 +493,19 @@ function renderReader(item, { keepScroll = false } = {}) {
             <span class="name" title="${esc(item.feedTitle)}">${esc(item.feedTitle)}</span>
           </div>
           <div class="reader-actions">
-            <button class="iconbtn ${item.starred ? 'on' : ''}" data-act="star" title="收藏 (S)">
+            <button class="iconbtn ${item.starred ? 'on' : ''}" data-act="star" title="${t('收藏 (S)')}">
               <svg viewBox="0 0 24 24" class="ic"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z"/></svg>
             </button>
-            <button class="iconbtn" data-act="unread" title="标为未读 (M)">
+            <button class="iconbtn" data-act="unread" title="${t('标为未读 (M)')}">
               <svg viewBox="0 0 24 24" class="ic"><path d="M3 8.5 12 14l9-5.5"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
             </button>
-            <button class="iconbtn" data-act="prev" title="上一篇 (K)" ${index <= 0 ? 'disabled style="opacity:.35"' : ''}>
+            <button class="iconbtn" data-act="prev" title="${t('上一篇 (K)')}" ${index <= 0 ? 'disabled style="opacity:.35"' : ''}>
               <svg viewBox="0 0 24 24" class="ic"><path d="m6 15 6-6 6 6"/></svg>
             </button>
-            <button class="iconbtn" data-act="next" title="下一篇 (J)" ${index < 0 || index >= state.items.length - 1 ? 'disabled style="opacity:.35"' : ''}>
+            <button class="iconbtn" data-act="next" title="${t('下一篇 (J)')}" ${index < 0 || index >= state.items.length - 1 ? 'disabled style="opacity:.35"' : ''}>
               <svg viewBox="0 0 24 24" class="ic"><path d="m6 9 6 6 6-6"/></svg>
             </button>
-            <button class="iconbtn only-mobile" data-act="close" title="关闭">
+            <button class="iconbtn only-mobile" data-act="close" title="${t('关闭')}">
               <svg viewBox="0 0 24 24" class="ic"><path d="M18 6 6 18M6 6l12 12"/></svg>
             </button>
           </div>
@@ -510,7 +514,7 @@ function renderReader(item, { keepScroll = false } = {}) {
         <div class="reader-meta">
           <span title="${esc(fullTime(item.publishedAt))}">${timeAgo(item.publishedAt)}</span>
           ${item.author ? `<span class="sep">·</span><span>${esc(item.author)}</span>` : ''}
-          ${item.link ? `<a class="reader-link" href="${esc(item.link)}" target="_blank" rel="noopener">原文
+          ${item.link ? `<a class="reader-link" href="${esc(item.link)}" target="_blank" rel="noopener">${t('原文')}
             <svg viewBox="0 0 24 24" class="ic"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
           </a>` : ''}
         </div>
@@ -588,7 +592,7 @@ async function markItemRead(id, read, { silent = false } = {}) {
       el.classList.toggle('unread', !read);
     }
     await refreshCounts();
-    if (!silent) toast(read ? '已标为已读' : '已标为未读');
+    if (!silent) toast(read ? t('已标为已读') : t('已标为未读'));
     if (state.scope.type === 'unread' && read && !silent) {
       state.items = state.items.filter((i) => i.id !== id);
       renderItems();
@@ -612,7 +616,7 @@ async function toggleStar() {
     const el = $(`#items .item[data-id="${item.id}"]`);
     if (el) el.classList.toggle('starred', next);
     refreshCounts();
-    toast(next ? '已加入收藏' : '已取消收藏');
+    toast(next ? t('已加入收藏') : t('已取消收藏'));
   } catch (err) {
     toast(err.message, 'error');
   }
@@ -663,7 +667,7 @@ async function startRefresh(scope = 'all', { isContinuation = false, silent = fa
   try {
     const data = await api('/api/refresh', { method: 'POST', body: { scope, since: refreshSession ? refreshSession.since : 0 } });
     if (!data.started) {
-      if (!isContinuation && !silent) toast(data.empty ? '所有订阅都还很新，稍后再试' : '已有刷新任务在进行中');
+      if (!isContinuation && !silent) toast(data.empty ? '所有订阅都还很新，稍后再试' : t('已有刷新任务在进行中'));
       refreshSession = null;
       return;
     }
@@ -719,9 +723,9 @@ function pollProgress(expectStart = false) {
 
     const totalAdded = session ? session.added : p.added || 0;
     const totalDone = session && session.done ? session.done : p.done;
-    const parts = [`刷新完成 · ${totalDone} 个订阅`];
-    if (totalAdded) parts.push(`新增 ${totalAdded} 篇`);
-    if (p.failed) parts.push(`${p.failed} 个失败`);
+    const parts = [t('刷新完成 · {n} 个订阅', { n: totalDone })];
+    if (totalAdded) parts.push(t('新增 {n} 篇', { n: totalAdded }));
+    if (p.failed) parts.push(t('{n} 个失败', { n: p.failed }));
     // 打开页面时的自动补刷不打扰用户（除非确实有新文章）
     if (p.mode !== 'due' || totalAdded > 0) toast(parts.join('，'), p.failed ? '' : 'success');
   }, 700);
@@ -764,7 +768,7 @@ function modal({ title, body, footer = '', wide = false, onMount }) {
 
 function folderOptions(selected) {
   return (
-    `<option value="">未分类</option>` +
+    `<option value="">${t('未分类')}</option>` +
     state.folders
       .map((f) => `<option value="${f.id}" ${f.id === selected ? 'selected' : ''}>${esc(f.name)}</option>`)
       .join('')
@@ -773,22 +777,22 @@ function folderOptions(selected) {
 
 function openAddFeedDialog() {
   modal({
-    title: '添加订阅',
+    title: t('添加订阅'),
     body: `
       <div class="field">
-        <label>订阅地址</label>
+        <label>${t('订阅地址')}</label>
         <div class="row">
-          <input class="input" id="feed-url" placeholder="https://example.com/feed.xml 或网站首页" spellcheck="false">
-          <button class="btn ghost" id="btn-preview">检测</button>
+          <input class="input" id="feed-url" placeholder="${t('https://example.com/feed.xml 或网站首页')}" spellcheck="false">
+          <button class="btn ghost" id="btn-preview">${t('检测')}</button>
         </div>
-        <div class="hint">支持 RSS / Atom 地址；也可以直接粘贴网站首页，会自动寻找订阅链接。</div>
+        <div class="hint">${t('支持 RSS / Atom 地址；也可以直接粘贴网站首页，会自动寻找订阅链接。')}</div>
       </div>
       <div id="preview-slot"></div>
       <div class="field">
-        <label>归入文件夹</label>
+        <label>${t('归入文件夹')}</label>
         <select class="select" id="feed-folder" style="width:100%">${folderOptions('')}</select>
       </div>`,
-    footer: `<button class="btn ghost" data-close>取消</button><button class="btn primary" id="btn-save-feed">添加订阅</button>`,
+    footer: `<button class="btn ghost" data-close>${t('取消')}</button><button class="btn primary" id="btn-save-feed">${t('添加订阅')}</button>`,
     onMount: ({ el, close }) => {
       const urlInput = $('#feed-url', el);
       const slot = $('#preview-slot', el);
@@ -798,15 +802,15 @@ function openAddFeedDialog() {
       const doPreview = async () => {
         const url = urlInput.value.trim();
         if (!url) return;
-        slot.innerHTML = `<div class="preview-card"><span class="pm">正在检测订阅…</span></div>`;
+        slot.innerHTML = `<div class="preview-card"><span class="pm">${t('正在检测订阅')}</span></div>`;
         try {
           const p = await api('/api/feeds/preview', { method: 'POST', body: { url } });
           previewed = p;
           slot.innerHTML = `<div class="preview-card">
             <div class="pt">${esc(p.title)}</div>
             <div class="pm">${esc(p.siteUrl || p.url)}</div>
-            <div class="pm">${p.itemCount} 篇文章${p.latest ? ` · 最新 ${timeAgo(p.latest)}` : ''}${
-              p.discovered ? ' · 已自动发现订阅地址' : ''
+            <div class="pm">${t('{n} 篇文章', { n: p.itemCount })}${p.latest ? t(' · 最新 {x}', { x: timeAgo(p.latest) }) : ''}${
+              p.discovered ? t(' · 已自动发现订阅地址') : ''
             }</div>
             ${p.sample.length ? `<ul class="psample">${p.sample.map((s) => `<li>${esc(s.title)}</li>`).join('')}</ul>` : ''}
           </div>`;
@@ -825,12 +829,12 @@ function openAddFeedDialog() {
       $('#btn-save-feed', el).addEventListener('click', async (e) => {
         const url = urlInput.value.trim();
         if (!url) {
-          toast('请输入订阅地址', 'error');
+          toast(t('请输入订阅地址'), 'error');
           return;
         }
         const btn = e.currentTarget;
         btn.disabled = true;
-        btn.textContent = '添加中…';
+        btn.textContent = t('添加中');
         try {
           const data = await api('/api/feeds', {
             method: 'POST',
@@ -839,12 +843,12 @@ function openAddFeedDialog() {
           close();
           await refreshCounts();
           await loadItems();
-          toast(data.added ? `已添加，抓取到 ${data.added} 篇文章` : '已添加订阅', 'success');
+          toast(data.added ? `已添加，抓取到 ${data.added} 篇文章` : t('已添加订阅'), 'success');
           if (data.error) toast('抓取失败：' + data.error, 'error');
         } catch (err) {
           toast(err.message, 'error');
           btn.disabled = false;
-          btn.textContent = '添加订阅';
+          btn.textContent = t('添加订阅');
         }
       });
     },
@@ -853,20 +857,20 @@ function openAddFeedDialog() {
 
 function openFolderDialog() {
   modal({
-    title: '新建文件夹',
-    body: `<div class="field"><label>文件夹名称</label><input class="input" id="folder-name" placeholder="例如：科技资讯"></div>`,
-    footer: `<button class="btn ghost" data-close>取消</button><button class="btn primary" id="btn-save-folder">创建</button>`,
+    title: t('新建文件夹'),
+    body: `<div class="field"><label>${t('文件夹名称')}</label><input class="input" id="folder-name" placeholder="${t('例如：科技资讯')}"></div>`,
+    footer: `<button class="btn ghost" data-close>${t('取消')}</button><button class="btn primary" id="btn-save-folder">${t('创建')}</button>`,
     onMount: ({ el, close }) => {
       const input = $('#folder-name', el);
       setTimeout(() => input.focus(), 60);
       const save = async () => {
         const name = input.value.trim();
-        if (!name) return toast('请输入名称', 'error');
+        if (!name) return toast(t('请输入名称'), 'error');
         try {
           await api('/api/folders', { method: 'POST', body: { name } });
           close();
           await refreshCounts();
-          toast('文件夹已创建', 'success');
+          toast(t('文件夹已创建'), 'success');
         } catch (err) {
           toast(err.message, 'error');
         }
@@ -877,11 +881,49 @@ function openFolderDialog() {
   });
 }
 
+/** 选择目标文件夹（触屏拖不动时的替代方案，桌面端右键也能用） */
+function openMoveDialog(feedId) {
+  const feed = state.feeds.find((f) => f.id === feedId);
+  if (!feed) return;
+  const current = feed.folderId || '';
+  const options = [{ id: '', name: t('未分类') }, ...state.folders.map((f) => ({ id: f.id, name: f.name }))];
+
+  modal({
+    title: t('移动到文件夹'),
+    body: `<div class="move-list">${options
+      .map(
+        (o) => `<button class="move-item ${current === o.id ? 'active' : ''}" data-folder="${o.id}">
+          <span class="mi-name">${esc(o.name)}</span>
+          ${current === o.id ? '<svg viewBox="0 0 24 24" class="ic mi-tick"><path d="m5 13 4 4L19 7"/></svg>' : ''}
+        </button>`
+      )
+      .join('')}</div>`,
+    footer: `<button class="btn ghost" data-close>${t('取消')}</button>`,
+    onMount: ({ el, close }) => {
+      el.querySelectorAll('.move-item').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const folderId = btn.dataset.folder || null;
+          const name = options.find((o) => o.id === (folderId || ''))?.name || '';
+          if ((feed.folderId || null) === folderId) return close();
+          try {
+            await api('/api/reorder', { method: 'POST', body: { type: 'feed', id: feedId, folderId, beforeId: null } });
+            close();
+            await refreshCounts();
+            toast(t('已移动到「{name}」', { name }), 'success');
+          } catch (err) {
+            toast(err.message, 'error');
+          }
+        });
+      });
+    },
+  });
+}
+
 function openRenameDialog(type, id, currentName) {
   modal({
-    title: type === 'feed' ? '重命名订阅' : '重命名文件夹',
-    body: `<div class="field"><label>名称</label><input class="input" id="rename-input" value="${esc(currentName)}"></div>`,
-    footer: `<button class="btn ghost" data-close>取消</button><button class="btn primary" id="btn-rename">保存</button>`,
+    title: type === 'feed' ? t('重命名订阅') : t('重命名文件夹'),
+    body: `<div class="field"><label>${t('名称')}</label><input class="input" id="rename-input" value="${esc(currentName)}"></div>`,
+    footer: `<button class="btn ghost" data-close>${t('取消')}</button><button class="btn primary" id="btn-rename">${t('保存')}</button>`,
     onMount: ({ el, close }) => {
       const input = $('#rename-input', el);
       setTimeout(() => {
@@ -896,7 +938,7 @@ function openRenameDialog(type, id, currentName) {
           close();
           await refreshCounts();
           await loadItems();
-          toast('已重命名', 'success');
+          toast(t('已重命名'), 'success');
         } catch (err) {
           toast(err.message, 'error');
         }
@@ -907,18 +949,18 @@ function openRenameDialog(type, id, currentName) {
   });
 }
 
-function openConfirm({ title, message, confirmText = '删除', requireText = '', onConfirm }) {
+function openConfirm({ title, message, confirmText = t('删除'), requireText = '', onConfirm }) {
   modal({
     title,
     body: `<p style="margin:0;color:var(--text-2);line-height:1.7">${message}</p>${
       requireText
         ? `<div class="field" style="margin-top:14px">
-             <label>请输入 <code style="background:var(--panel-3);padding:1px 5px;border-radius:4px">${esc(requireText)}</code> 以确认</label>
+             <label>${t('请输入 {x} 以确认', { x: requireText })}</label>
              <input class="input" id="confirm-text" spellcheck="false" autocomplete="off" placeholder="${esc(requireText)}">
            </div>`
         : ''
     }`,
-    footer: `<button class="btn ghost" data-close>取消</button><button class="btn primary" id="btn-confirm" style="background:var(--danger)" ${
+    footer: `<button class="btn ghost" data-close>${t('取消')}</button><button class="btn primary" id="btn-confirm" style="background:var(--danger)" ${
       requireText ? 'disabled' : ''
     }>${esc(confirmText)}</button>`,
     onMount: ({ el, close }) => {
@@ -948,23 +990,23 @@ function openConfirm({ title, message, confirmText = '删除', requireText = '',
 
 function openImportDialog() {
   const dialog = modal({
-    title: '导入 OPML 订阅',
+    title: t('导入 OPML 订阅'),
     wide: true,
     body: `
       <div class="dropzone" id="dropzone">
         <svg viewBox="0 0 24 24" class="ic"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
-        <div>点击选择文件，或把 .opml 文件拖到这里</div>
-        <div style="margin-top:4px;opacity:.7">兼容 Feedbro / Feedly / Inoreader 等导出的 OPML</div>
+        <div>${t('点击选择文件，或把 .opml 文件拖到这里')}</div>
+        <div style="margin-top:4px;opacity:.7">${t('兼容 Feedbro / Feedly / Inoreader 等导出的 OPML')}</div>
       </div>
       <div id="import-result"></div>`,
-    footer: `<button class="btn ghost" data-close>关闭</button>`,
+    footer: `<button class="btn ghost" data-close>${t('关闭')}</button>`,
     onMount: ({ el }) => {
       const dz = $('#dropzone', el);
       const result = $('#import-result', el);
 
       const upload = async (file) => {
         if (!file) return;
-        dz.innerHTML = `<div>正在导入 ${esc(file.name)} …</div>`;
+        dz.innerHTML = `<div>${t('正在导入 {name}', { name: esc(file.name) })}</div>`;
         try {
           const text = await file.text();
           const data = await api('/api/opml', {
@@ -973,9 +1015,9 @@ function openImportDialog() {
             headers: { 'content-type': 'text/x-opml' },
           });
           result.innerHTML = `<div class="preview-card">
-            <div class="pt">导入完成</div>
-            <div class="pm">新增订阅 ${data.added} 个 · 跳过已存在 ${data.skipped} 个 · 新建文件夹 ${data.foldersCreated} 个</div>
-            <div class="pm">正在后台抓取文章，稍候即可在列表中看到。</div>
+            <div class="pt">${t('导入完成')}</div>
+            <div class="pm">${t('新增订阅 {a} 个 · 跳过已存在 {b} 个 · 新建文件夹 {c} 个', { a: data.added, b: data.skipped, c: data.foldersCreated })}</div>
+            <div class="pm">${t('正在后台抓取文章，稍候即可在列表中看到。')}</div>
           </div>`;
           dz.style.display = 'none';
           await refreshCounts();
@@ -983,7 +1025,7 @@ function openImportDialog() {
           pollProgress(true);
         } catch (err) {
           result.innerHTML = `<div class="preview-card" style="border-color:var(--danger)"><span style="color:var(--danger)">${esc(err.message)}</span></div>`;
-          dz.innerHTML = `<div>点击选择文件，或把 .opml 文件拖到这里</div>`;
+          dz.innerHTML = `<div>${t('点击选择文件，或把 .opml 文件拖到这里')}</div>`;
         }
       };
 
@@ -1003,75 +1045,96 @@ function openImportDialog() {
 function openSettingsDialog() {
   const s = state.settings || {};
   const intervals = [
-    [900, '15 分钟'],
-    [1800, '30 分钟'],
-    [3600, '1 小时'],
-    [10800, '3 小时'],
-    [21600, '6 小时'],
-    [43200, '12 小时'],
+    [900, t('15 分钟')],
+    [1800, t('30 分钟')],
+    [3600, t('1 小时')],
+    [10800, t('3 小时')],
+    [21600, t('6 小时')],
+    [43200, t('12 小时')],
   ];
   modal({
-    title: '设置',
+    title: t('设置'),
     wide: true,
     body: `
       <div class="stat-grid">
-        <div class="stat-box"><div class="v">${state.feeds.length}</div><div class="k">订阅源</div></div>
-        <div class="stat-box"><div class="v">${state.counts.items}</div><div class="k">文章总数</div></div>
-        <div class="stat-box"><div class="v">${state.counts.unread}</div><div class="k">未读</div></div>
+        <div class="stat-box"><div class="v">${state.feeds.length}</div><div class="k">${t('订阅源')}</div></div>
+        <div class="stat-box"><div class="v">${state.counts.items}</div><div class="k">${t('文章总数')}</div></div>
+        <div class="stat-box"><div class="v">${state.counts.unread}</div><div class="k">${t('未读')}</div></div>
       </div>
 
       <div class="opt-row">
-        <div class="label">自动刷新间隔<small>后台会按此间隔轮询所有订阅源</small></div>
+        <div class="label">${t('自动刷新间隔')}<small>${t('后台会按此间隔轮询所有订阅源')}</small></div>
         <select class="select" id="opt-interval">
           ${intervals.map(([v, t]) => `<option value="${v}" ${Number(s.refreshInterval) === v ? 'selected' : ''}>${t}</option>`).join('')}
         </select>
       </div>
       <div class="opt-row">
-        <div class="label">每个订阅保留文章数<small>超出后自动清理最旧的文章</small></div>
+        <div class="label">${t('每个订阅保留文章数')}<small>${t('超出后自动清理最旧的文章')}</small></div>
         <input class="input" id="opt-max" type="number" min="20" max="5000" step="10" value="${Number(s.maxItemsPerFeed) || 300}" style="width:110px">
       </div>
       <div class="opt-row">
-        <div class="label">PushPlus 推送<small>订阅有新文章时推送到微信；Token 在 <a href="https://www.pushplus.plus" target="_blank" rel="noopener">pushplus.plus</a> 微信扫码登录后获取</small></div>
+        <div class="label">${t('PushPlus 推送')}<small>${t('订阅有新文章时推送到微信；Token 在')} <a href="https://www.pushplus.plus" target="_blank" rel="noopener">pushplus.plus</a> ${t('微信扫码登录后获取')}</small></div>
         <div class="row" style="gap:6px;flex-wrap:nowrap">
           <input class="input" id="opt-push-token" placeholder="PushPlus Token" spellcheck="false" autocomplete="off" value="${esc(s.pushToken || '')}" style="width:132px">
-          <button class="btn ghost" id="opt-push-test" title="发送一条测试消息">测试</button>
-          <label class="checkbox"><input type="checkbox" id="opt-push-enabled" ${s.pushEnabled ? 'checked' : ''}>启用</label>
+          <button class="btn ghost" id="opt-push-test" title="发送一条测试消息">${t('测试')}</button>
+          <label class="checkbox"><input type="checkbox" id="opt-push-enabled" ${s.pushEnabled ? 'checked' : ''}>${t('启用')}</label>
         </div>
       </div>
       <div class="opt-row">
-        <div class="label">主题</div>
+        <div class="label">${t('主题')}</div>
         <select class="select" id="opt-theme">
-          <option value="light" ${state.theme === 'light' ? 'selected' : ''}>浅色</option>
-          <option value="dark" ${state.theme === 'dark' ? 'selected' : ''}>深色</option>
-          <option value="sepia" ${state.theme === 'sepia' ? 'selected' : ''}>护眼</option>
+          <option value="light" ${state.theme === 'light' ? 'selected' : ''}>${t('浅色')}</option>
+          <option value="dark" ${state.theme === 'dark' ? 'selected' : ''}>${t('深色')}</option>
+          <option value="sepia" ${state.theme === 'sepia' ? 'selected' : ''}>${t('护眼')}</option>
         </select>
       </div>
       <div class="opt-row">
-        <div class="label">网络代理<small>通过环境变量 HTTPS_PROXY 配置，用于抓取需要代理的源</small></div>
-        <span style="font-size:12px;color:var(--muted);max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right">${state.proxy ? esc(state.proxy) : '未配置（直连）'}</span>
+        <div class="label">${t('界面语言')}<small>${t('每个账号可以单独设置')}</small></div>
+        <select class="select" id="opt-lang">
+          ${window.I18N.LANGS.map(
+            (l) => `<option value="${l.code}" ${(s.language || 'zh-CN') === l.code ? 'selected' : ''}>${l.label}</option>`
+          ).join('')}
+        </select>
       </div>
       <div class="opt-row">
-        <div class="label">订阅数据<small>导出的文件可导入 Feedbro 等其他阅读器</small></div>
+        <div class="label">${t('网络代理')}<small>${t('通过环境变量 HTTPS_PROXY 配置，用于抓取需要代理的源')}</small></div>
+        <span style="font-size:12px;color:var(--muted);max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right">${state.proxy ? esc(state.proxy) : t('未配置（直连）')}</span>
+      </div>
+      <div class="opt-row">
+        <div class="label">${t('订阅数据')}<small>${t('导出的文件可导入 Feedbro 等其他阅读器')}</small></div>
         <div class="row" style="gap:6px">
-          <button class="btn ghost" id="opt-import">导入</button>
-          <button class="btn ghost" id="opt-export">导出</button>
+          <button class="btn ghost" id="opt-import">${t('导入')}</button>
+          <button class="btn ghost" id="opt-export">${t('导出')}</button>
         </div>
       </div>
       <div class="opt-row">
-        <div class="label">清空所有订阅<small>删除当前账号的全部订阅、文件夹和文章，账号保留</small></div>
-        <button class="btn danger" id="opt-clear-subs">清空</button>
+        <div class="label">${t('清空所有订阅')}<small>${t('删除当前账号的全部订阅、文件夹和文章，账号保留')}</small></div>
+        <button class="btn danger" id="opt-clear-subs">${t('清空')}</button>
       </div>
       ${
         state.user && state.user.role === 'admin'
           ? `<div class="opt-row">
-               <div class="label">初始化设置<small>清空所有账号的订阅与文章，管理员密码恢复为 admin，需要重新登录</small></div>
-               <button class="btn danger" id="opt-reset">初始化</button>
+               <div class="label">${t('初始化设置')}<small>${t('清空所有账号的订阅与文章，管理员密码恢复为 admin，需要重新登录')}</small></div>
+               <button class="btn danger" id="opt-reset">${t('初始化')}</button>
              </div>`
           : ''
       }
-      <div class="hint" style="color:var(--muted);font-size:11.5px">FeedNest v${esc(state.version)} · 数据保存在服务端 SQLite 中，刷新页面不会丢失</div>`,
-    footer: `<button class="btn ghost" data-close>关闭</button><button class="btn primary" id="btn-save-settings">保存设置</button>`,
+      <div class="hint" style="color:var(--muted);font-size:11.5px">FeedNest v${esc(state.version)} · ${t('数据保存在服务端 SQLite 中，刷新页面不会丢失')}</div>`,
+    footer: `<button class="btn ghost" data-close>${t('关闭')}</button><button class="btn primary" id="btn-save-settings">${t('保存设置')}</button>`,
     onMount: ({ el, close }) => {
+      $('#opt-lang', el).addEventListener('change', async (e) => {
+        const code = e.target.value;
+        state.settings.language = code;
+        applyLanguage(code);
+        try {
+          await api('/api/settings', { method: 'POST', body: { language: code } });
+        } catch (err) {
+          toast(err.message, 'error');
+        }
+        // 设置弹窗本身也要用新语言重建
+        close();
+        openSettingsDialog();
+      });
       $('#opt-theme', el).addEventListener('change', (e) => {
         state.theme = e.target.value;
         applyTheme();
@@ -1087,26 +1150,26 @@ function openSettingsDialog() {
         const token = $('#opt-push-token', el).value.trim();
         if (!token) return toast('请先填写 PushPlus Token', 'error');
         btn.disabled = true;
-        btn.textContent = '发送中…';
+        btn.textContent = t('发送中');
         try {
           await api('/api/push/test', { method: 'POST', body: { token } });
-          toast('测试消息已发送，请查看微信', 'success');
+          toast(t('测试消息已发送，请查看微信'), 'success');
         } catch (err) {
           toast('测试失败：' + err.message, 'error');
         } finally {
           btn.disabled = false;
-          btn.textContent = '测试';
+          btn.textContent = t('测试');
         }
       });
 
       $('#opt-clear-subs', el).addEventListener('click', () => {
         close();
         openConfirm({
-          title: '清空所有订阅',
+          title: t('清空所有订阅'),
           message:
-            '将删除<b>当前账号</b>的全部订阅、文件夹和文章，账号本身保留。<br>此操作不可撤销，建议先「导出 OPML」备份。',
-          confirmText: '清空',
-          requireText: '清空',
+            t('将删除当前账号的全部订阅、文件夹和文章，账号本身保留。此操作不可撤销，建议先「导出 OPML」备份。'),
+          confirmText: t('清空'),
+          requireText: t('清空'),
           onConfirm: async () => {
             const res = await api('/api/subscriptions/clear', { method: 'POST' });
             state.items = [];
@@ -1116,7 +1179,7 @@ function openSettingsDialog() {
             renderReaderEmpty();
             await loadState();
             await loadItems();
-            toast(`已清空：${res.removed.feeds} 个订阅、${res.removed.items} 篇文章`, 'success');
+            toast(t('已清空：{f} 个订阅、{i} 篇文章', { f: res.removed.feeds, i: res.removed.items }), 'success');
           },
         });
       });
@@ -1126,10 +1189,10 @@ function openSettingsDialog() {
         resetBtn.addEventListener('click', () => {
           close();
           openConfirm({
-            title: '初始化设置',
+            title: t('初始化设置'),
             message:
-              '将执行以下操作：<br>· 清空<b>所有账号</b>的订阅、文件夹和文章<br>· 重置所有偏好设置<br>· 所有账号退出登录<br>· 管理员密码恢复为 <code>admin</code><br><br>账号本身会保留，此操作不可撤销。',
-            confirmText: '初始化',
+              [t('将执行以下操作：'), '<br>· ' + t('清空所有账号的订阅、文件夹和文章'), '<br>· ' + t('重置所有偏好设置'), '<br>· ' + t('所有账号退出登录'), '<br>· ' + t('管理员密码恢复为 admin'), '<br><br>' + t('账号本身会保留，此操作不可撤销。')].join(''),
+            confirmText: t('初始化'),
             requireText: 'RESET',
             onConfirm: async () => {
               await api('/api/admin/reset', { method: 'POST', body: { confirm: 'RESET' } });
@@ -1141,8 +1204,8 @@ function openSettingsDialog() {
               $('#items').innerHTML = '';
               $('#tree').innerHTML = '';
               renderReaderEmpty();
-              showLogin('已初始化，请使用 admin / admin 重新登录');
-              toast('已恢复初始状态', 'success');
+              showLogin(t('已初始化，请使用 admin / admin 重新登录'));
+              toast(t('已恢复初始状态'), 'success');
             },
           });
         });
@@ -1160,7 +1223,7 @@ function openSettingsDialog() {
           });
           state.settings = data.settings;
           close();
-          toast('设置已保存', 'success');
+          toast(t('设置已保存'), 'success');
         } catch (err) {
           toast(err.message, 'error');
         }
@@ -1193,22 +1256,22 @@ async function openStatsDialog() {
       ${avatarHtml(f.title, null, 20)}
       <div class="name">
         <div class="fn" title="${esc(f.url)}">${esc(f.title)}</div>
-        ${failed ? `<div class="fe">${esc(f.lastError || '抓取失败')}</div>` : ''}
+        ${failed ? `<div class="fe">${esc(f.lastError || t('抓取失败'))}</div>` : ''}
       </div>
-      <span class="badge ${failed ? 'err' : 'ok'}">${failed ? '异常' : '正常'}</span>
-      <span class="meta">${f.total} 篇</span>
-      <span class="meta" style="min-width:64px;text-align:right">${f.lastFetchAt ? timeAgo(f.lastFetchAt) : '未抓取'}</span>
-      <button class="mini-btn" data-retry="${f.id}" title="重新抓取">
+      <span class="badge ${failed ? 'err' : 'ok'}">${failed ? t('异常') : t('正常')}</span>
+      <span class="meta">${t('{n} 篇', { n: f.total })}</span>
+      <span class="meta" style="min-width:64px;text-align:right">${f.lastFetchAt ? timeAgo(f.lastFetchAt) : t('未抓取')}</span>
+      <button class="mini-btn" data-retry="${f.id}" title="${t('重新抓取')}">
         <svg viewBox="0 0 24 24" class="ic"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
       </button>
     </div>`;
   };
 
   modal({
-    title: `订阅状态（${feeds.length} 个源 · ${feeds.filter((f) => f.lastStatus === 'error').length} 个异常）`,
+    title: t('订阅状态（{a} 个源 · {b} 个异常）', { a: feeds.length, b: feeds.filter((f) => f.lastStatus === 'error').length }),
     wide: true,
     body: `<div class="feed-list" id="feed-list">${feeds.map(rowHtml).join('')}</div>`,
-    footer: `<button class="btn ghost" data-close>关闭</button>`,
+    footer: `<button class="btn ghost" data-close>${t('关闭')}</button>`,
     onMount: ({ el }) => {
       const list = $('#feed-list', el);
       list.addEventListener('click', async (e) => {
@@ -1220,7 +1283,7 @@ async function openStatsDialog() {
           const r = await api(`/api/feeds/${id}/refresh`, { method: 'POST' });
           await refreshCounts();
           if (r.status === 'error') toast('仍然失败：' + r.error, 'error');
-          else toast(`已更新${r.added ? `，新增 ${r.added} 篇` : ''}`, 'success');
+          else toast(t('已更新') + (r.added ? t('，新增 {n} 篇', { n: r.added }) : ''), 'success');
         } catch (err) {
           toast(err.message, 'error');
         }
@@ -1275,7 +1338,175 @@ document.addEventListener('scroll', closeCtx, true);
 
 /* ======================= 事件绑定 ======================= */
 
+/* ======================= 拖拽排序 ======================= */
+
+let dragState = null;
+
+function clearDropMarks() {
+  $$('#tree .drop-before, #tree .drop-after, #tree .drop-into').forEach((el) =>
+    el.classList.remove('drop-before', 'drop-after', 'drop-into')
+  );
+}
+
+/** 根据落点行和位置计算目标：文件夹 / 插入位置 */
+function resolveDrop(row, mark) {
+  if (!row || row.hasAttribute('data-drop-root')) {
+    return { folderId: null, beforeId: null };
+  }
+  if (row.dataset.type === 'folder') {
+    if (mark === 'into') return { folderId: row.dataset.id, beforeId: null };
+    const wrapper = row.closest('.tree-folder');
+    const next = wrapper && wrapper.nextElementSibling;
+    const beforeId =
+      mark === 'before'
+        ? row.dataset.id
+        : next && next.classList.contains('tree-folder')
+          ? next.dataset.folder
+          : null;
+    return { folderBeforeId: beforeId };
+  }
+  // 落在订阅行上：插到它前面/后面，归属它所在的文件夹
+  const folderEl = row.closest('.tree-folder');
+  const folderId = folderEl ? folderEl.dataset.folder : null;
+  let beforeId = null;
+  if (mark === 'before') {
+    beforeId = row.dataset.id;
+  } else {
+    const next = row.nextElementSibling;
+    beforeId = next && next.dataset && next.dataset.type === 'feed' ? next.dataset.id : null;
+  }
+  return { folderId, beforeId };
+}
+
+function initTreeDrag() {
+  const tree = $('#tree');
+  if (!tree) return;
+
+  tree.addEventListener('dragstart', (e) => {
+    const row = e.target.closest('.tree-row');
+    if (!row || !row.dataset.type) return;
+    dragState = { type: row.dataset.type, id: row.dataset.id };
+    row.classList.add('dragging');
+    document.body.classList.add('dragging');
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', `${dragState.type}:${dragState.id}`);
+    }
+  });
+
+  tree.addEventListener('dragend', () => {
+    dragState = null;
+    setAutoScroll(0);
+    document.body.classList.remove('dragging');
+    $$('#tree .dragging').forEach((el) => el.classList.remove('dragging'));
+    clearDropMarks();
+  });
+
+  // 拖到列表上下边缘时自动滚动，否则一屏外的目标拖不到
+  let scrollDir = 0;
+  let scrollRaf = null;
+  const EDGE = 46;
+  const autoScrollTick = () => {
+    if (!scrollDir) {
+      scrollRaf = null;
+      return;
+    }
+    tree.scrollTop += scrollDir * 12;
+    scrollRaf = requestAnimationFrame(autoScrollTick);
+  };
+  const setAutoScroll = (dir) => {
+    scrollDir = dir;
+    if (dir && !scrollRaf) scrollRaf = requestAnimationFrame(autoScrollTick);
+    if (!dir && scrollRaf) {
+      cancelAnimationFrame(scrollRaf);
+      scrollRaf = null;
+    }
+  };
+
+  tree.addEventListener('dragover', (e) => {
+    if (!dragState) return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+
+    const treeRect = tree.getBoundingClientRect();
+    if (e.clientY < treeRect.top + EDGE) setAutoScroll(-1);
+    else if (e.clientY > treeRect.bottom - EDGE) setAutoScroll(1);
+    else setAutoScroll(0);
+
+    clearDropMarks();
+    const row = e.target.closest('.tree-row');
+    if (!row) return;
+    if (row.dataset.type === dragState.type && row.dataset.id === dragState.id) return;
+
+    const rect = row.getBoundingClientRect();
+    const ratio = (e.clientY - rect.top) / rect.height;
+
+    if (row.dataset.type === 'folder') {
+      // 拖订阅到文件夹：整行都表示"放进去"；拖文件夹：上下边缘调整顺序
+      if (dragState.type === 'feed') row.classList.add('drop-into');
+      else row.classList.add(ratio < 0.5 ? 'drop-before' : 'drop-after');
+      return;
+    }
+    // 拖文件夹落在订阅行上：不处理
+    if (dragState.type !== 'feed') return;
+    row.classList.add(ratio < 0.5 ? 'drop-before' : 'drop-after');
+  });
+
+  tree.addEventListener('dragleave', (e) => {
+    if (!tree.contains(e.relatedTarget)) setAutoScroll(0);
+  });
+
+  tree.addEventListener('drop', async (e) => {
+    if (!dragState) return;
+    e.preventDefault();
+    const dragged = dragState;
+    dragState = null;
+    setAutoScroll(0);
+    document.body.classList.remove('dragging');
+
+    const row = e.target.closest('.tree-row');
+    const mark = !row
+      ? 'root'
+      : row.classList.contains('drop-into')
+        ? 'into'
+        : row.classList.contains('drop-before')
+          ? 'before'
+          : row.classList.contains('drop-after')
+            ? 'after'
+            : '';
+    clearDropMarks();
+    $$('#tree .dragging').forEach((el) => el.classList.remove('dragging'));
+    if (!mark) return;
+    if (row && row.dataset.type === dragged.type && row.dataset.id === dragged.id) return;
+
+    const target = resolveDrop(row, mark);
+    try {
+      if (dragged.type === 'feed') {
+        await api('/api/reorder', {
+          method: 'POST',
+          body: {
+            type: 'feed',
+            id: dragged.id,
+            folderId: target.folderId || null,
+            beforeId: target.beforeId || null,
+          },
+        });
+      } else {
+        await api('/api/reorder', {
+          method: 'POST',
+          body: { type: 'folder', id: dragged.id, beforeId: target.folderBeforeId || null },
+        });
+      }
+      await refreshCounts();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  });
+}
+
 function bindEvents() {
+  initTreeDrag();
+
   /* ---- 登录 / 账号 ---- */
   $('#login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -1285,11 +1516,11 @@ function bindEvents() {
     const err = $('#login-error');
     if (!username || !password) {
       err.hidden = false;
-      err.textContent = '请输入用户名和密码';
+      err.textContent = t('请输入用户名和密码');
       return;
     }
     btn.disabled = true;
-    btn.textContent = '登录中…';
+    btn.textContent = t('登录中');
     err.hidden = true;
     try {
       const data = await api('/api/auth/login', { method: 'POST', body: { username, password } });
@@ -1298,13 +1529,13 @@ function bindEvents() {
       showApp();
       await loadState();
       await loadItems();
-      toast(`欢迎回来，${data.user.username}`, 'success');
+      toast(t('欢迎回来，{u}', { u: data.user.username }), 'success');
     } catch (e2) {
       err.hidden = false;
       err.textContent = e2.message;
     } finally {
       btn.disabled = false;
-      btn.textContent = '登录';
+      btn.textContent = t('登录');
     }
   });
 
@@ -1356,84 +1587,114 @@ function bindEvents() {
     }
   });
 
-  $('#tree').addEventListener('contextmenu', (e) => {
-    const row = e.target.closest('.tree-row');
-    if (!row) return;
-    e.preventDefault();
+  function openRowMenu(row, x, y) {
     const { type, id } = row.dataset;
     if (type === 'feed') {
       const feed = state.feeds.find((f) => f.id === id);
-      openCtx(e.clientX, e.clientY, [
+      openCtx(x, y, [
         {
           act: 'refresh',
-          label: '刷新此订阅',
+          label: t('刷新此订阅'),
           run: async () => {
             try {
               const r = await api(`/api/feeds/${id}/refresh`, { method: 'POST' });
               await refreshCounts();
               await loadItems();
-              toast(r.status === 'error' ? '刷新失败：' + r.error : `已刷新，新增 ${r.added || 0} 篇`, r.status === 'error' ? 'error' : 'success');
+              toast(r.status === 'error' ? t('刷新失败：{e}', { e: r.error }) : t('已刷新，新增 {n} 篇', { n: r.added || 0 }), r.status === 'error' ? 'error' : 'success');
             } catch (err) {
               toast(err.message, 'error');
             }
           },
         },
-        { act: 'rename', label: '重命名', run: () => openRenameDialog('feed', id, feed ? feed.title : '') },
-        { act: 'open', label: '打开网站', run: () => feed && feed.siteUrl && window.open(feed.siteUrl, '_blank', 'noopener') },
+        { act: 'rename', label: t('重命名'), run: () => openRenameDialog('feed', id, feed ? feed.title : '') },
+        { act: 'move', label: t('移动到文件夹'), run: () => openMoveDialog(id) },
+        { act: 'open', label: t('打开网站'), run: () => feed && feed.siteUrl && window.open(feed.siteUrl, '_blank', 'noopener') },
         { sep: true },
         {
           act: 'delete',
-          label: '删除订阅',
+          label: t('删除订阅'),
           danger: true,
           run: () =>
             openConfirm({
-              title: '删除订阅',
-              message: `确定要删除「${esc(feed ? feed.title : '')}」吗？该订阅下的所有文章也会被删除，此操作不可撤销。`,
+              title: t('删除订阅'),
+              message: t('确定要删除「{name}」吗？该订阅下的所有文章也会被删除，此操作不可撤销。', { name: esc(feed ? feed.title : '') }),
               onConfirm: async () => {
                 await api('/api/feeds/' + id, { method: 'DELETE' });
                 if (state.scope.type === 'feed' && state.scope.id === id) setScope({ type: 'all' });
                 await refreshCounts();
                 await loadItems();
-                toast('已删除订阅', 'success');
+                toast(t('已删除订阅'), 'success');
               },
             }),
         },
       ]);
     } else if (type === 'folder') {
       const folder = state.folders.find((f) => f.id === id);
-      openCtx(e.clientX, e.clientY, [
-        { act: 'rename', label: '重命名文件夹', run: () => openRenameDialog('folder', id, folder ? folder.name : '') },
+      openCtx(x, y, [
+        { act: 'rename', label: t('重命名文件夹'), run: () => openRenameDialog('folder', id, folder ? folder.name : '') },
         {
           act: 'read',
-          label: '全部标为已读',
+          label: t('全部标为已读'),
           run: async () => {
             await api('/api/mark-read', { method: 'POST', body: { scope: 'folder:' + id } });
             await refreshCounts();
             await loadItems();
-            toast('已全部标为已读', 'success');
+            toast(t('已全部标为已读'), 'success');
           },
         },
         { sep: true },
         {
           act: 'delete',
-          label: '删除文件夹',
+          label: t('删除文件夹'),
           danger: true,
           run: () =>
             openConfirm({
-              title: '删除文件夹',
-              message: `确定要删除文件夹「${esc(folder ? folder.name : '')}」吗？里面的订阅会移到「未分类」，不会被删除。`,
+              title: t('删除文件夹'),
+              message: t('确定要删除文件夹「{name}」吗？里面的订阅会移到「未分类」，不会被删除。', { name: esc(folder ? folder.name : '') }),
               onConfirm: async () => {
                 await api('/api/folders/' + id, { method: 'DELETE' });
                 if (state.scope.type === 'folder' && state.scope.id === id) setScope({ type: 'all' });
                 await refreshCounts();
                 await loadItems();
-                toast('已删除文件夹', 'success');
+                toast(t('已删除文件夹'), 'success');
               },
             }),
         },
       ]);
     }
+  }
+
+  $('#tree').addEventListener('contextmenu', (e) => {
+    const row = e.target.closest('.tree-row');
+    if (!row) return;
+    e.preventDefault();
+    openRowMenu(row, e.clientX, e.clientY);
   });
+
+  // 触屏没有 HTML5 拖拽，用长按 500ms 打开同一个菜单（移动/重命名/删除都靠它）
+  let pressTimer = null;
+  let pressStart = null;
+  const cancelPress = () => {
+    clearTimeout(pressTimer);
+    pressTimer = null;
+    pressStart = null;
+  };
+  $('#tree').addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return;
+    const row = e.target.closest('.tree-row');
+    if (!row) return;
+    pressStart = { x: e.clientX, y: e.clientY };
+    pressTimer = setTimeout(() => {
+      pressTimer = null;
+      openRowMenu(row, e.clientX, e.clientY);
+      if (navigator.vibrate) navigator.vibrate(10);
+    }, 500);
+  });
+  $('#tree').addEventListener('pointermove', (e) => {
+    if (!pressStart) return;
+    if (Math.abs(e.clientX - pressStart.x) > 10 || Math.abs(e.clientY - pressStart.y) > 10) cancelPress();
+  });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach((ev) => $('#tree').addEventListener(ev, cancelPress));
 
   $('#items').addEventListener('click', (e) => {
     const item = e.target.closest('.item');
@@ -1481,14 +1742,14 @@ function bindEvents() {
   $('#btn-mark-read').addEventListener('click', () => {
     const label = scopeTitle();
     openConfirm({
-      title: '全部标为已读',
-      message: `确定把「${esc(label)}」中的所有文章标为已读吗？`,
-      confirmText: '标为已读',
+      title: t('全部标为已读'),
+      message: t('确定把「{label}」中的所有文章标为已读吗？', { label: esc(label) }),
+      confirmText: t('标为已读'),
       onConfirm: async () => {
         await api('/api/mark-read', { method: 'POST', body: { scope: scopeParam() } });
         await refreshCounts();
         await loadItems();
-        toast('已全部标为已读', 'success');
+        toast(t('已全部标为已读'), 'success');
       },
     });
   });
@@ -1605,6 +1866,25 @@ function toggleFolder(id, force) {
 
 /* ======================= 初始化 ======================= */
 
+/** 应用界面语言：静态文案 + 已渲染区域全部重画 */
+function applyLanguage(code) {
+  window.I18N.setLang(code || 'zh-CN');
+  try {
+    localStorage.setItem('feednest-lang', window.I18N.getLang());
+  } catch {
+    /* 隐私模式忽略 */
+  }
+  document.title = t('FeedNest · RSS 阅读器');
+  window.I18N.applyStatic();
+  renderUserChip();
+  renderSidebar();
+  if (state.items && state.items.length) renderItems();
+  $('#listTitle').textContent = scopeTitle();
+  $('#listCount').textContent = state.total ? t('{n} 篇', { n: state.total }) : '';
+  if (!state.current) renderReaderEmpty();
+  setProgressUI(state.progress);
+}
+
 async function loadState() {
   const data = await api('/api/state');
   state.user = data.user || state.user;
@@ -1616,8 +1896,7 @@ async function loadState() {
   state.proxy = data.proxy;
   state.version = data.version;
   state.progress = data.progress;
-  renderUserChip();
-  renderSidebar();
+  applyLanguage(data.settings && data.settings.language);
   setProgressUI(data.progress);
   if (data.progress && data.progress.running) pollProgress();
 }
@@ -1656,7 +1935,7 @@ function renderUserChip() {
   avatar.style.background = avatarColor(user.username);
   $('#user-name').textContent = user.username;
   $('#dd-name').textContent = user.username;
-  $('#dd-role').textContent = user.role === 'admin' ? '管理员' : '普通用户';
+  $('#dd-role').textContent = user.role === 'admin' ? t('管理员') : t('普通用户');
   $('#dd-users').hidden = user.role !== 'admin';
   $('#pw-banner').hidden = !user.isDefaultPassword;
 }
@@ -1679,32 +1958,32 @@ async function doLogout() {
   $('#items').innerHTML = '';
   $('#tree').innerHTML = '';
   renderReaderEmpty();
-  showLogin('已退出登录');
+  showLogin(t('已退出登录'));
 }
 
 function openPasswordDialog() {
   modal({
-    title: '修改密码',
+    title: t('修改密码'),
     body: `
-      <div class="field"><label>当前密码</label><input class="input" id="pw-cur" type="password" autocomplete="current-password"></div>
-      <div class="field"><label>新密码</label><input class="input" id="pw-new" type="password" autocomplete="new-password">
-        <div class="hint">至少 4 位，修改后需要重新登录</div></div>
-      <div class="field"><label>确认新密码</label><input class="input" id="pw-new2" type="password" autocomplete="new-password"></div>`,
-    footer: `<button class="btn ghost" data-close>取消</button><button class="btn primary" id="btn-save-pw">保存</button>`,
+      <div class="field"><label>${t('当前密码')}</label><input class="input" id="pw-cur" type="password" autocomplete="current-password"></div>
+      <div class="field"><label>${t('新密码')}</label><input class="input" id="pw-new" type="password" autocomplete="new-password">
+        <div class="hint">${t('至少 4 位，修改后需要重新登录')}</div></div>
+      <div class="field"><label>${t('确认新密码')}</label><input class="input" id="pw-new2" type="password" autocomplete="new-password"></div>`,
+    footer: `<button class="btn ghost" data-close>${t('取消')}</button><button class="btn primary" id="btn-save-pw">${t('保存')}</button>`,
     onMount: ({ el, close }) => {
       setTimeout(() => $('#pw-cur', el).focus(), 60);
       const save = async () => {
         const cur = $('#pw-cur', el).value;
         const next = $('#pw-new', el).value;
         const next2 = $('#pw-new2', el).value;
-        if (!cur) return toast('请输入当前密码', 'error');
+        if (!cur) return toast(t('请输入当前密码'), 'error');
         if (next.length < 4) return toast('新密码至少 4 位', 'error');
-        if (next !== next2) return toast('两次输入的新密码不一致', 'error');
+        if (next !== next2) return toast(t('两次输入的新密码不一致'), 'error');
         try {
           await api('/api/auth/password', { method: 'POST', body: { currentPassword: cur, newPassword: next } });
           close();
-          showLogin('密码已修改，请使用新密码重新登录');
-          toast('密码已修改', 'success');
+          showLogin(t('密码已修改，请使用新密码重新登录'));
+          toast(t('密码已修改'), 'success');
         } catch (err) {
           toast(err.message, 'error');
         }
@@ -1729,22 +2008,26 @@ function userRowHtml(u, me) {
   return `<div class="user-row">
     ${avatarHtml(u.username, null, 22)}
     <div style="min-width:0">
-      <div class="uname">${esc(u.username)}${isSelf ? '<span class="umeta"> · 当前账号</span>' : ''}</div>
-      <div class="umeta">${u.feedCount} 个订阅 · ${u.lastLoginAt ? '上次登录 ' + timeAgo(u.lastLoginAt) : '从未登录'}</div>
+      <div class="uname">${esc(u.username)}${isSelf ? `<span class="umeta">${t(' · 当前账号')}</span>` : ''}</div>
+      <div class="umeta">${
+        u.lastLoginAt
+          ? t('{n} 个订阅 · 上次登录 {x}', { n: u.feedCount, x: timeAgo(u.lastLoginAt) })
+          : t('{n} 个订阅 · 从未登录', { n: u.feedCount })
+      }</div>
     </div>
-    <span class="role-badge ${u.role === 'admin' ? 'admin' : ''}">${u.role === 'admin' ? '管理员' : '普通用户'}</span>
-    ${u.disabled ? '<span class="role-badge off">已禁用</span>' : ''}
+    <span class="role-badge ${u.role === 'admin' ? 'admin' : ''}">${u.role === 'admin' ? t('管理员') : t('普通用户')}</span>
+    ${u.disabled ? `<span class="role-badge off">${t('已禁用')}</span>` : ''}
     <div class="acts">
-      <button class="mini-btn" data-act="reset" data-id="${u.id}" title="重置密码">
+      <button class="mini-btn" data-act="reset" data-id="${u.id}" title="${t('重置密码')}">
         <svg viewBox="0 0 24 24" class="ic">${USER_ICONS.reset}</svg>
       </button>
-      <button class="mini-btn" data-act="role" data-id="${u.id}" title="${u.role === 'admin' ? '降为普通用户' : '设为管理员'}">
+      <button class="mini-btn" data-act="role" data-id="${u.id}" title="${u.role === 'admin' ? t('降为普通用户') : t('设为管理员')}">
         <svg viewBox="0 0 24 24" class="ic">${USER_ICONS.role}</svg>
       </button>
-      <button class="mini-btn" data-act="toggle" data-id="${u.id}" title="${u.disabled ? '启用账号' : '禁用账号'}">
+      <button class="mini-btn" data-act="toggle" data-id="${u.id}" title="${u.disabled ? t('启用账号') : t('禁用账号')}">
         <svg viewBox="0 0 24 24" class="ic">${USER_ICONS.toggle}</svg>
       </button>
-      ${isSelf ? '' : `<button class="mini-btn" data-act="del" data-id="${u.id}" title="删除账号">
+      ${isSelf ? '' : `<button class="mini-btn" data-act="del" data-id="${u.id}" title="${t('删除账号')}">
         <svg viewBox="0 0 24 24" class="ic">${USER_ICONS.del}</svg>
       </button>`}
     </div>
@@ -1754,23 +2037,23 @@ function userRowHtml(u, me) {
 async function openUsersDialog() {
   const me = state.user;
   modal({
-    title: '用户管理',
+    title: t('用户管理'),
     wide: true,
     body: `
       <div class="add-user">
-        <input class="input" id="nu-name" placeholder="用户名" spellcheck="false">
-        <input class="input" id="nu-pass" type="password" placeholder="初始密码">
+        <input class="input" id="nu-name" placeholder="${t('用户名')}" spellcheck="false">
+        <input class="input" id="nu-pass" type="password" placeholder="${t('初始密码')}">
         <select class="select" id="nu-role">
-          <option value="user">普通用户</option>
-          <option value="admin">管理员</option>
+          <option value="user">${t('普通用户')}</option>
+          <option value="admin">${t('管理员')}</option>
         </select>
-        <button class="btn primary" id="nu-add">新增</button>
+        <button class="btn primary" id="nu-add">${t('新增')}</button>
       </div>
       <div class="hint" style="color:var(--muted);font-size:11.5px;margin-bottom:4px">
-        每个账号的订阅、文件夹、已读与收藏完全独立，互相不可见。只有管理员能管理账号。
+        ${t('每个账号的订阅、文件夹、已读与收藏完全独立，互相不可见。只有管理员能管理账号。')}
       </div>
       <div class="user-table" id="user-table"></div>`,
-    footer: `<button class="btn ghost" data-close>关闭</button>`,
+    footer: `<button class="btn ghost" data-close>${t('关闭')}</button>`,
     onMount: ({ el }) => {
       const table = $('#user-table', el);
 
@@ -1789,7 +2072,7 @@ async function openUsersDialog() {
           await api('/api/users', { method: 'POST', body: { username, password, role } });
           $('#nu-name', el).value = '';
           $('#nu-pass', el).value = '';
-          toast(`已创建用户 ${username}`, 'success');
+          toast(t('已创建用户 {u}', { u: username }), 'success');
           await render();
         } catch (err) {
           toast(err.message, 'error');
@@ -1819,7 +2102,7 @@ async function openUsersDialog() {
               method: 'PATCH',
               body: { role: target.role === 'admin' ? 'user' : 'admin' },
             });
-            toast(target.role === 'admin' ? '已降为普通用户' : '已设为管理员', 'success');
+            toast(target.role === 'admin' ? t('已降为普通用户') : t('已设为管理员'), 'success');
             await render();
           } catch (err) {
             toast(err.message, 'error');
@@ -1829,7 +2112,7 @@ async function openUsersDialog() {
         if (act === 'toggle') {
           try {
             await api('/api/users/' + id, { method: 'PATCH', body: { disabled: !target.disabled } });
-            toast(target.disabled ? '账号已启用' : '账号已禁用', 'success');
+            toast(target.disabled ? t('账号已启用') : t('账号已禁用'), 'success');
             await render();
           } catch (err) {
             toast(err.message, 'error');
@@ -1838,11 +2121,11 @@ async function openUsersDialog() {
         }
         if (act === 'del') {
           openConfirm({
-            title: '删除账号',
-            message: `确定删除用户「${esc(target.username)}」吗？该账号的 ${target.feedCount} 个订阅和全部文章会一起删除，无法恢复。`,
+            title: t('删除账号'),
+            message: t('确定删除用户「{u}」吗？该账号的 {n} 个订阅和全部文章会一起删除，无法恢复。', { u: esc(target.username), n: target.feedCount }),
             onConfirm: async () => {
               await api('/api/users/' + id, { method: 'DELETE' });
-              toast('账号已删除', 'success');
+              toast(t('账号已删除'), 'success');
               openUsersDialog();
             },
           });
@@ -1856,11 +2139,11 @@ async function openUsersDialog() {
 
 function openResetPassword(user, onDone) {
   modal({
-    title: `重置「${user.username}」的密码`,
-    body: `<div class="field"><label>新密码</label>
+    title: t('重置「{u}」的密码', { u: user.username }),
+    body: `<div class="field"><label>${t('新密码')}</label>
       <input class="input" id="rp-pass" type="password" autocomplete="new-password">
-      <div class="hint">至少 4 位；重置后该用户的所有登录会话会失效</div></div>`,
-    footer: `<button class="btn ghost" data-close>取消</button><button class="btn primary" id="rp-save">重置密码</button>`,
+      <div class="hint">${t('至少 4 位；重置后该用户的所有登录会话会失效')}</div></div>`,
+    footer: `<button class="btn ghost" data-close>${t('取消')}</button><button class="btn primary" id="rp-save">${t('重置密码')}</button>`,
     onMount: ({ el, close }) => {
       setTimeout(() => $('#rp-pass', el).focus(), 60);
       const save = async () => {
@@ -1869,7 +2152,7 @@ function openResetPassword(user, onDone) {
         try {
           await api('/api/users/' + user.id, { method: 'PATCH', body: { password: pass } });
           close();
-          toast('密码已重置', 'success');
+          toast(t('密码已重置'), 'success');
           onDone && onDone();
         } catch (err) {
           toast(err.message, 'error');
@@ -1891,6 +2174,15 @@ async function kickDueRefresh() {
 }
 
 async function boot() {
+  let saved = 'zh-CN';
+  try {
+    saved = localStorage.getItem('feednest-lang') || 'zh-CN';
+  } catch {
+    /* ignore */
+  }
+  window.I18N.setLang(saved);
+  document.title = t('FeedNest · RSS 阅读器');
+  window.I18N.applyStatic();
   applyTheme();
   renderReaderEmpty();
   $$('#viewswitch button').forEach((b) => b.classList.toggle('active', b.dataset.view === state.view));

@@ -11,7 +11,7 @@
 <body>
 <div class="app" id="app" hidden>
   <header class="topbar">
-    <button class="btn icon only-mobile" id="btn-sidebar" title="订阅列表">
+    <button class="btn icon only-mobile" id="btn-sidebar" data-i18n-title="订阅列表">
       <svg viewBox="0 0 24 24" class="ic"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
     </button>
     <div class="brand">
@@ -22,35 +22,35 @@
     </div>
 
     <div class="toolbar">
-      <button class="btn ghost" id="btn-refresh" title="刷新全部订阅 (R)">
+      <button class="btn ghost" id="btn-refresh" data-i18n-title="刷新全部订阅 (R)">
         <svg viewBox="0 0 24 24" class="ic"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
-        <span class="btn-label">刷新</span>
+        <span class="btn-label" data-i18n="刷新">刷新</span>
       </button>
       <button class="btn primary" id="btn-add-feed">
         <svg viewBox="0 0 24 24" class="ic"><path d="M12 5v14M5 12h14"/></svg>
-        <span class="btn-label">添加订阅</span>
+        <span class="btn-label" data-i18n="添加订阅">添加订阅</span>
       </button>
-      <button class="btn ghost hide-sm" id="btn-add-folder" title="新建文件夹">
+      <button class="btn ghost hide-sm" id="btn-add-folder" data-i18n-title="新建文件夹">
         <svg viewBox="0 0 24 24" class="ic"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/><path d="M12 11v5M9.5 13.5h5"/></svg>
       </button>
       <span class="tb-sep hide-sm"></span>
-      <button class="btn ghost hide-sm" id="btn-import" title="导入 OPML 订阅文件">
+      <button class="btn ghost hide-sm" id="btn-import" data-i18n-title="导入 OPML 订阅文件">
         <svg viewBox="0 0 24 24" class="ic"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-        <span class="btn-label">导入</span>
+        <span class="btn-label" data-i18n="导入">导入</span>
       </button>
-      <button class="btn ghost hide-sm" id="btn-export" title="导出为 OPML 订阅文件">
+      <button class="btn ghost hide-sm" id="btn-export" data-i18n-title="导出为 OPML 订阅文件">
         <svg viewBox="0 0 24 24" class="ic"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg>
-        <span class="btn-label">导出</span>
+        <span class="btn-label" data-i18n="导出">导出</span>
       </button>
-      <button class="btn icon" id="btn-theme" title="切换主题">
+      <button class="btn icon" id="btn-theme" data-i18n-title="切换主题">
         <svg viewBox="0 0 24 24" class="ic" id="theme-icon"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       </button>
-      <button class="btn icon" id="btn-settings" title="设置">
+      <button class="btn icon" id="btn-settings" data-i18n-title="设置">
         <svg viewBox="0 0 24 24" class="ic"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1Z"/></svg>
       </button>
 
       <div class="usermenu" id="usermenu">
-        <button class="user-btn" id="btn-user" title="账号">
+        <button class="user-btn" id="btn-user" data-i18n-title="账号">
           <span class="avatar user-avatar" id="user-avatar">A</span>
           <span class="user-name" id="user-name">admin</span>
           <svg viewBox="0 0 24 24" class="ic chev"><path d="m6 9 6 6 6-6"/></svg>
@@ -58,20 +58,20 @@
         <div class="dropdown" id="user-dropdown">
           <div class="dropdown-head">
             <div class="dn" id="dd-name">admin</div>
-            <div class="dr" id="dd-role">管理员</div>
+            <div class="dr" id="dd-role" data-i18n="管理员">管理员</div>
           </div>
           <button data-user-act="password">
             <svg viewBox="0 0 24 24" class="ic"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-            修改密码
+            <span data-i18n="修改密码">修改密码</span>
           </button>
           <button data-user-act="users" id="dd-users" hidden>
             <svg viewBox="0 0 24 24" class="ic"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 11a3 3 0 1 0 0-6"/><path d="M17.5 20a5.5 5.5 0 0 0-2-4.3"/></svg>
-            用户管理
+            <span data-i18n="用户管理">用户管理</span>
           </button>
           <div class="sep"></div>
           <button data-user-act="logout" class="danger">
             <svg viewBox="0 0 24 24" class="ic"><path d="M15 17l5-5-5-5"/><path d="M20 12H9"/><path d="M12 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6"/></svg>
-            退出登录
+            <span data-i18n="退出登录">退出登录</span>
           </button>
         </div>
       </div>
@@ -80,8 +80,8 @@
 
   <div class="banner" id="pw-banner" hidden>
     <svg viewBox="0 0 24 24" class="ic"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
-    <span>当前账号仍在使用默认密码，建议立即修改。</span>
-    <button class="btn ghost" data-user-act="password">修改密码</button>
+    <span data-i18n="当前账号仍在使用默认密码，建议立即修改。">当前账号仍在使用默认密码，建议立即修改。</span>
+    <button class="btn ghost" data-user-act="password"><span data-i18n="修改密码">修改密码</span></button>
   </div>
 
   <div class="progressbar" id="progressbar"><div class="bar" id="progressbar-bar"></div></div>
@@ -91,20 +91,20 @@
       <nav class="nav" id="nav">
         <button class="nav-item" data-nav="all">
           <svg viewBox="0 0 24 24" class="ic"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-          <span>全部文章</span><span class="count" id="count-all">0</span>
+          <span data-i18n="全部文章">全部文章</span><span class="count" id="count-all">0</span>
         </button>
         <button class="nav-item" data-nav="unread">
           <svg viewBox="0 0 24 24" class="ic"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" class="fill"/></svg>
-          <span>未读文章</span><span class="count accent" id="count-unread">0</span>
+          <span data-i18n="未读文章">未读文章</span><span class="count accent" id="count-unread">0</span>
         </button>
         <button class="nav-item" data-nav="starred">
           <svg viewBox="0 0 24 24" class="ic"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z"/></svg>
-          <span>收藏夹</span><span class="count" id="count-star">0</span>
+          <span data-i18n="收藏夹">收藏夹</span><span class="count" id="count-star">0</span>
         </button>
       </nav>
 
       <div class="section-head">
-        <span class="section-title">订阅源</span>
+        <span class="section-title" data-i18n="订阅源">订阅源</span>
         <div class="section-actions">
           <button class="mini-btn" id="btn-new-folder" title="新建文件夹">
             <svg viewBox="0 0 24 24" class="ic"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/><path d="M12 11v5M9.5 13.5h5"/></svg>
@@ -115,7 +115,7 @@
       <div class="tree" id="tree"></div>
 
       <div class="sidebar-foot">
-        <span id="stat-line" class="muted">加载中…</span>
+        <span id="stat-line" class="muted" data-i18n="加载中">加载中…</span>
       </div>
     </aside>
 
@@ -125,10 +125,10 @@
           <h2 id="listTitle">全部文章</h2>
           <span class="list-count" id="listCount"></span>
           <div class="list-tools">
-            <button class="mini-btn" id="btn-mark-read" title="将当前列表全部标为已读">
+            <button class="mini-btn" id="btn-mark-read" data-i18n-title="将当前列表全部标为已读">
               <svg viewBox="0 0 24 24" class="ic"><path d="m2 13 4 4L14 9"/><path d="m10 15 2 2L22 7"/></svg>
             </button>
-            <button class="mini-btn" id="btn-refresh-scope" title="刷新当前订阅源">
+            <button class="mini-btn" id="btn-refresh-scope" data-i18n-title="刷新当前订阅源">
               <svg viewBox="0 0 24 24" class="ic"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
             </button>
           </div>
@@ -136,17 +136,17 @@
         <div class="list-filter-row">
           <div class="search">
             <svg viewBox="0 0 24 24" class="ic"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            <input id="search" type="search" placeholder="搜索文章…" autocomplete="off" spellcheck="false">
+            <input id="search" type="search" data-i18n-ph="搜索文章" placeholder="搜索文章…" autocomplete="off" spellcheck="false">
           </div>
-          <button class="chip" id="btn-unread" title="只看未读 (U)">未读</button>
-          <select id="sort" class="select" title="排序">
-            <option value="newest">最新优先</option>
-            <option value="oldest">最早优先</option>
+          <button class="chip" id="btn-unread" data-i18n-title="只看未读 (U)" data-i18n="未读">未读</button>
+          <select id="sort" class="select" data-i18n-title="排序">
+            <option value="newest" data-i18n="最新优先">最新优先</option>
+            <option value="oldest" data-i18n="最早优先">最早优先</option>
           </select>
           <div class="viewswitch" id="viewswitch">
-            <button data-view="comfortable" title="摘要模式"><svg viewBox="0 0 24 24" class="ic"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
-            <button data-view="compact" title="紧凑模式"><svg viewBox="0 0 24 24" class="ic"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-            <button data-view="card" title="卡片模式"><svg viewBox="0 0 24 24" class="ic"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></button>
+            <button data-view="comfortable" data-i18n-title="摘要模式"><svg viewBox="0 0 24 24" class="ic"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
+            <button data-view="compact" data-i18n-title="紧凑模式"><svg viewBox="0 0 24 24" class="ic"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+            <button data-view="card" data-i18n-title="卡片模式"><svg viewBox="0 0 24 24" class="ic"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></button>
           </div>
         </div>
       </div>
@@ -167,27 +167,28 @@
       </span>
       <span class="brand-name">FeedNest</span>
     </div>
-    <h1>登录你的订阅</h1>
-    <p class="login-sub">每个账号的订阅、已读状态、收藏相互独立</p>
+    <h1 data-i18n="登录你的订阅">登录你的订阅</h1>
+    <p class="login-sub" data-i18n="每个账号的订阅、已读状态、收藏相互独立">每个账号的订阅、已读状态、收藏相互独立</p>
     <form id="login-form" autocomplete="on">
       <label class="field">
-        <span>用户名</span>
+        <span data-i18n="用户名">用户名</span>
         <input class="input" id="login-user" name="username" autocomplete="username" spellcheck="false" required>
       </label>
       <label class="field">
-        <span>密码</span>
+        <span data-i18n="密码">密码</span>
         <input class="input" id="login-pass" name="password" type="password" autocomplete="current-password" required>
       </label>
       <div class="login-error" id="login-error" hidden></div>
       <button class="btn primary login-btn" type="submit" id="login-submit">登录</button>
     </form>
-    <div class="login-hint">首次使用请用默认账号 <code>admin</code> / <code>admin</code> 登录，登录后请及时修改密码。</div>
+    <div class="login-hint"><span data-i18n="首次使用请用默认账号">首次使用请用默认账号</span> <code>admin</code> / <code>admin</code> <span data-i18n="登录，登录后请及时修改密码。">登录，登录后请及时修改密码。</span></div>
   </div>
 </div>
 
 <div id="toast-root" class="toast-root"></div>
 <input type="file" id="file-input" accept=".opml,.xml,text/xml,text/x-opml" hidden>
 
+<script src="/i18n.js"></script>
 <script src="/app.js"></script>
 </body>
 </html>

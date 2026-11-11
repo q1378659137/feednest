@@ -3,7 +3,7 @@
  * D1 不支持交互式事务，批量写用 db.batch()。
  */
 
-const DEFAULT_SETTINGS = { refreshInterval: 1800, maxItemsPerFeed: 300, pushEnabled: false, pushToken: '' };
+const DEFAULT_SETTINGS = { refreshInterval: 1800, maxItemsPerFeed: 300, pushEnabled: false, pushToken: '', language: 'zh-CN' };
 
 export class Db {
   constructor(d1) {
@@ -216,6 +216,45 @@ export class Db {
   }
 
   /* ---------------- 订阅 ---------------- */
+
+  /* ---------------- 拖拽排序 ---------------- */
+
+  async reorderFeed(userId, feedId, folderId, beforeId) {
+    const feeds = await this.listFeeds(userId);
+    const target = feeds.find((f) => f.id === feedId);
+    if (!target) throw new Error('订阅不存在');
+
+    let dest = folderId || null;
+    if (dest) {
+      const folders = await this.listFolders(userId);
+      if (!folders.some((f) => f.id === dest)) dest = null;
+    }
+
+    const siblings = feeds.filter((f) => f.id !== feedId && (f.folder_id || null) === dest);
+    const idx = beforeId ? siblings.findIndex((f) => f.id === beforeId) : -1;
+    siblings.splice(idx < 0 ? siblings.length : idx, 0, target);
+
+    await this.batch(
+      siblings.map((f, i) =>
+        this.d1.prepare('UPDATE feeds SET sort_order = ?, folder_id = ? WHERE id = ?').bind((i + 1) * 100, dest, f.id)
+      )
+    );
+    return { id: feedId, folderId: dest, position: siblings.findIndex((f) => f.id === feedId) };
+  }
+
+  async reorderFolder(userId, folderId, beforeId) {
+    const folders = await this.listFolders(userId);
+    const target = folders.find((f) => f.id === folderId);
+    if (!target) throw new Error('文件夹不存在');
+    const rest = folders.filter((f) => f.id !== folderId);
+    const idx = beforeId ? rest.findIndex((f) => f.id === beforeId) : -1;
+    rest.splice(idx < 0 ? rest.length : idx, 0, target);
+
+    await this.batch(
+      rest.map((f, i) => this.d1.prepare('UPDATE folders SET position = ? WHERE id = ?').bind((i + 1) * 100, f.id))
+    );
+    return { id: folderId, position: rest.findIndex((f) => f.id === folderId) };
+  }
 
   async listFeeds(userId) {
     return this.all('SELECT * FROM feeds WHERE user_id = ? ORDER BY sort_order ASC, created_at ASC', userId);
